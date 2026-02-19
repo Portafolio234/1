@@ -1,4 +1,5 @@
 import React from 'react';
+import { FaEnvelope, FaPhone, FaMapMarkerAlt, FaWhatsapp, FaPaperPlane } from 'react-icons/fa';
 
 const Contact = () => {
     return (
@@ -11,21 +12,21 @@ const Contact = () => {
             <div className="flex flex-wrap gap-12 bg-[#101025]/40 p-12 rounded-xl backdrop-blur-sm">
                 <div className="flex-1 min-w-[300px]">
                     <div className="flex items-center mb-8 text-lg bg-white/5 p-5 rounded-lg transition-all hover:translate-x-2.5 hover:bg-white/10 border border-transparent hover:border-white/10">
-                        <i className="fas fa-envelope text-accent-primary text-2xl w-8 text-center mr-4"></i>
+                        <FaEnvelope className="text-accent-primary text-2xl w-8 text-center mr-4" />
                         <a href="mailto:leo_nieto_cortes@hotmail.com" className="hover:text-accent-primary transition-colors">leo_nieto_cortes@hotmail.com</a>
                     </div>
                     <div className="flex items-center mb-8 text-lg bg-white/5 p-5 rounded-lg transition-all hover:translate-x-2.5 hover:bg-white/10 border border-transparent hover:border-white/10">
-                        <i className="fas fa-phone text-accent-primary text-2xl w-8 text-center mr-4"></i>
+                        <FaPhone className="text-accent-primary text-2xl w-8 text-center mr-4" />
                         <a href="https://wa.me/525615410755" target="_blank" rel="noopener noreferrer" className="hover:text-accent-primary transition-colors">+52 56 1541 0755</a>
                     </div>
                     <div className="flex items-center mb-8 text-lg bg-white/5 p-5 rounded-lg transition-all hover:translate-x-2.5 hover:bg-white/10 border border-transparent hover:border-white/10">
-                        <i className="fas fa-map-marker-alt text-accent-primary text-2xl w-8 text-center mr-4"></i>
+                        <FaMapMarkerAlt className="text-accent-primary text-2xl w-8 text-center mr-4" />
                         <span>Ecatepec de Morelos, México</span>
                     </div>
                 </div>
 
                 <div className="flex-[1.5] min-w-[300px] flex flex-col justify-center items-center text-center">
-                    <i className="fab fa-whatsapp text-[4rem] text-[#25D366] mb-5 drop-shadow-[0_0_20px_rgba(37,211,102,0.4)]"></i>
+                    <FaWhatsapp className="text-[4rem] text-[#25D366] mb-5 drop-shadow-[0_0_20px_rgba(37,211,102,0.4)]" />
                     <h3 className="text-2xl font-heading mb-4">¿Tienes un proyecto en mente?</h3>
                     <p className="text-text-secondary mb-8">Hablemos directamente por WhatsApp</p>
                     <a
@@ -34,7 +35,7 @@ const Contact = () => {
                         rel="noopener noreferrer"
                         className="btn btn-primary bg-gradient-to-r from-[#25D366] to-[#128C7E] px-8 py-4 rounded font-bold uppercase tracking-wider text-black flex items-center gap-3 hover:transform hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(37,211,102,0.6)] transition-all"
                     >
-                        Iniciar Chat <i className="fas fa-paper-plane"></i>
+                        Iniciar Chat <FaPaperPlane />
                     </a>
                 </div>
             </div>
