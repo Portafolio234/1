@@ -14,7 +14,7 @@ const Hero = () => {
                     Ingeniero de Software & Soluciones de IA
                 </h2>
                 <p className="text-lg md:text-xl text-text-secondary mb-10">
-                    Especializado en Modelos Locales (Llama, DeepSeek) y Desarrollo Full Stack Moderno.
+                    Especializado en Soluciones RAG & Agentes de IA (Llama, DeepSeek) y Desarrollo Full Stack Moderno.
                 </p>
                 <div className="flex justify-center gap-5">
                     <a href="#projects" className="btn btn-primary">
