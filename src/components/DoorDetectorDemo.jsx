@@ -393,11 +393,7 @@ const DoorDetectorDemo = ({ onClose }) => {
                 </div>
 
                 {/* Footer fijo del sidebar */}
-                <div className="pt-4 border-t border-gray-700 shrink-0">
-                    <button onClick={onClose} className="btn w-full bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 hover:text-red-300 py-2.5 rounded-lg text-sm font-bold tracking-wide transition-all uppercase flex items-center justify-center gap-2">
-                        <FaCompress /> Cerrar Demo
-                    </button>
-                </div>
+
             </div>
 
             {/* Main Canvas Area */}
