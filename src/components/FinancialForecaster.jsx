@@ -180,8 +180,8 @@ const FinancialForecaster = ({ onClose }) => {
                     <h2 className="text-sm font-bold text-gray-400 uppercase tracking-widest flex gap-2 items-center">
                         <FaUserTie /> AI Analyst
                     </h2>
-                    <button onClick={onClose} className="p-2 hover:bg-gray-800 rounded-full text-gray-400 hover:text-white">
-                        <FaCompress />
+                    <button onClick={onClose} className="flex items-center gap-2 px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 border border-red-500/20 rounded-lg transition-all text-[10px] font-bold tracking-wider uppercase">
+                        <FaCompress /> CERRAR DEMO
                     </button>
                 </div>
 

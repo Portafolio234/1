@@ -324,7 +324,9 @@ const DoorDetectorDemo = ({ onClose }) => {
                     <h2 className="text-xl font-bold font-heading text-accent-primary flex items-center gap-2">
                         <i className="fas fa-door-open"></i> DETECTOR
                     </h2>
-                    <button onClick={onClose} className="md:hidden text-white hover:text-red-400 transition-colors"><FaCompress /></button>
+                    <button onClick={onClose} className="flex items-center gap-2 px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 border border-red-500/20 rounded-lg transition-all text-[10px] font-bold tracking-wider uppercase">
+                        <FaCompress /> CERRAR DEMO
+                    </button>
                 </div>
 
                 {/* Área Scrollable: Lista y Dropzone */}

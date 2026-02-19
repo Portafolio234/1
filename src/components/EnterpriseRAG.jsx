@@ -142,9 +142,11 @@ const EnterpriseRAG = ({ onClose }) => {
                         </p>
                     </div>
                     <div className="flex gap-2">
-                        <button onClick={onClose} className="p-2 hover:bg-red-500/20 rounded-full transition-colors text-gray-400 hover:text-red-400">
-                            <FaCompress />
-                        </button>
+                        <div className="flex gap-2">
+                            <button onClick={onClose} className="flex items-center gap-2 px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 border border-red-500/20 rounded-lg transition-all text-[10px] font-bold tracking-wider uppercase backdrop-blur-sm">
+                                <FaCompress /> CERRAR DEMO
+                            </button>
+                        </div>
                     </div>
                 </div>
 
