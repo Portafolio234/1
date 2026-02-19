@@ -74,7 +74,7 @@ const EnterpriseRAG = ({ onClose }) => {
     };
 
     return createPortal(
-        <div className="fixed inset-0 z-[9999] bg-[#0f172a] flex text-white overflow-hidden font-sans">
+        <div className="fixed inset-0 z-[9999] bg-[#0f172a] flex text-white overflow-hidden overscroll-none font-sans">
 
             {/* Left Panel: Live Data View */}
             <div className="w-2/3 bg-[#1e293b] p-8 hidden md:flex flex-col border-r border-gray-700 relative overflow-hidden">

@@ -94,10 +94,10 @@ const FinancialForecaster = ({ onClose }) => {
     };
 
     return createPortal(
-        <div className="fixed inset-0 z-[9999] bg-[#0b0f19] text-white overflow-hidden font-sans flex flex-col md:flex-row">
+        <div className="fixed inset-0 z-[9999] bg-[#0b0f19] text-white overflow-hidden overscroll-none font-sans flex flex-col md:flex-row">
 
             {/* Left Main Area: Chart */}
-            <div className="flex-1 flex flex-col relative border-r border-gray-800">
+            <div className="flex-1 flex flex-col relative border-r border-gray-800 h-[55dvh] md:h-auto">
                 {/* Header Chart */}
                 <div className="p-6 border-b border-gray-800 flex justify-between items-center bg-[#111827]">
                     <div>
@@ -174,7 +174,7 @@ const FinancialForecaster = ({ onClose }) => {
             </div>
 
             {/* Right Panel: Controls & Chat */}
-            <div className="w-full md:w-[400px] bg-[#111827] flex flex-col relative z-20 shadow-2xl">
+            <div className="w-full md:w-[400px] h-[45dvh] md:h-auto bg-[#111827] flex flex-col relative z-20 shadow-2xl">
                 {/* Header Panel */}
                 <div className="p-4 border-b border-gray-800 flex justify-between items-center">
                     <h2 className="text-sm font-bold text-gray-400 uppercase tracking-widest flex gap-2 items-center">
