@@ -136,9 +136,11 @@ npm install
 Crear `.env` en la raíz:
 
 ```env
-VITE_ROBOFLOW_API_KEY=tu_key
+VITE_ROBOFLOW_API_KEY=hKrCyLFvEqmxmyVGuMfF
 GROQ_API_KEY=tu_key
 ```
+
+> La API key de Roboflow es pública (solo da acceso al modelo de inferencia). La key de Groq es privada y debe obtenerse en [console.groq.com](https://console.groq.com).
 
 ### Desarrollo
 
