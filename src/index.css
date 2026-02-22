@@ -2,13 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── DESIGN TOKENS ───────────────────────────────── */
 :root {
+    /* Background */
     --bg-color: #050510;
-    --card-bg: #101025;
+    --bg-elevated: #101025;
+    --bg-surface: rgba(16, 16, 37, 0.6);
+
+    /* Text */
     --text-primary: #ffffff;
-    --text-secondary: #a0a0b0;
+    --text-secondary: #b0b0c0;
+    --text-muted: #707088;
+
+    /* Accent */
     --accent-primary: #00f3ff;
     --accent-secondary: #bc13fe;
+    --accent-success: #10b981;
+
+    /* Radius */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+    --radius-full: 999px;
+
+    /* Shadows */
+    --shadow-glow-primary: 0 0 20px rgba(0, 243, 255, 0.3);
+    --shadow-glow-secondary: 0 0 20px rgba(188, 19, 254, 0.3);
+    --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
+    --shadow-card-hover: 0 16px 48px rgba(0, 243, 255, 0.12);
+
+    /* Transitions */
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 body {
@@ -16,11 +43,13 @@ body {
     color: var(--text-primary);
     font-family: 'Inter', sans-serif;
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom Scrollbar */
+/* ─── SCROLLBAR ───────────────────────────────────── */
 ::-webkit-scrollbar {
-    width: 10px;
+    width: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -28,33 +57,95 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--accent-primary);
-    border-radius: 5px;
-    border: 2px solid var(--bg-color);
+    background: rgba(0, 243, 255, 0.3);
+    border-radius: var(--radius-full);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--accent-secondary);
+    background: rgba(0, 243, 255, 0.6);
 }
 
-/* Animations */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-full);
+}
+
+/* ─── GLASS CARDS ─────────────────────────────────── */
+.glass-card {
+    background: var(--bg-surface);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 243, 255, 0.08);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-base);
+}
+
+.glass-card:hover {
+    border-color: rgba(0, 243, 255, 0.25);
+    box-shadow: var(--shadow-card-hover);
+}
+
+/* ─── BUTTONS ─────────────────────────────────────── */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-md);
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: all var(--transition-base);
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    color: var(--bg-color);
+    border: none;
+}
+
+.btn-primary:hover {
+    box-shadow: var(--shadow-glow-primary);
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--accent-primary);
+    border: 1px solid rgba(0, 243, 255, 0.3);
+}
+
+.btn-secondary:hover {
+    background: rgba(0, 243, 255, 0.08);
+    border-color: var(--accent-primary);
+    transform: translateY(-2px);
+}
+
+/* ─── ANIMATIONS ──────────────────────────────────── */
 @keyframes textShadow {
     0% {
         text-shadow: 2px 2px 0 var(--accent-primary), -2px -2px 0 var(--accent-secondary);
     }
-
     25% {
         text-shadow: -2px 2px 0 var(--accent-primary), 2px -2px 0 var(--accent-secondary);
     }
-
     50% {
         text-shadow: 2px -2px 0 var(--accent-primary), -2px 2px 0 var(--accent-secondary);
     }
-
     75% {
         text-shadow: -2px -2px 0 var(--accent-primary), 2px 2px 0 var(--accent-secondary);
     }
-
     100% {
         text-shadow: 2px 2px 0 var(--accent-primary), -2px -2px 0 var(--accent-secondary);
     }
@@ -65,16 +156,11 @@ body {
 }
 
 @keyframes breathe {
-    0% {
-        box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+    0%, 100% {
+        box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
     }
-
     50% {
-        box-shadow: 0 0 25px rgba(0, 243, 255, 0.7);
-    }
-
-    100% {
-        box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+        box-shadow: 0 0 30px rgba(0, 243, 255, 0.6);
     }
 }
 
@@ -83,15 +169,73 @@ body {
 }
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .animate-fadeIn {
-    animation: fadeIn 0.3s ease-out forwards;
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slideIn {
+    animation: slideIn 0.3s ease-out forwards;
+}
+
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-16px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.animate-slideInLeft {
+    animation: slideInLeft 0.4s ease-out forwards;
+}
+
+@keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.animate-scaleIn {
+    animation: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+.animate-shimmer {
+    background: linear-gradient(90deg, transparent, rgba(0, 243, 255, 0.05), transparent);
+    background-size: 200% 100%;
+    animation: shimmer 3s infinite;
+}
+
+/* ─── SECTION HEADING UNDERLINE ───────────────────── */
+.section-heading {
+    position: relative;
+    display: inline-block;
+}
+
+.section-heading::after {
+    content: '';
+    position: absolute;
+    bottom: -12px;
+    left: 25%;
+    width: 50%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--accent-secondary), transparent);
+    border-radius: var(--radius-full);
+}
+
+/* ─── UTILITY: Line clamp ─────────────────────────── */
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }

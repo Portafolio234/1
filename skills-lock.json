@@ -11,6 +11,11 @@
       "sourceType": "github",
       "computedHash": "a5f4489a106495127e9aa81c678f0e8bd78eb01c0f04701fc8f317e463241bf9"
     },
+    "ui-ux-pro-max": {
+      "source": "kimny1143/claude-code-template",
+      "sourceType": "github",
+      "computedHash": "2d5647b945593b210ce9bd489d470a5b36993b5ebc8c01ce7e47eb26760d044f"
+    },
     "vercel-react-best-practices": {
       "source": "vercel-labs/agent-skills",
       "sourceType": "github",

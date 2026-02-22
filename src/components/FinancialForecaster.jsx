@@ -112,7 +112,7 @@ const FinancialForecaster = ({ onClose }) => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     messages: [
-                        { role: 'system', content: `Eres un experto analista financiero. Estás analizando el activo ${ticker} en un rango de ${timeRange}. Responde de forma profesional, técnica y basada en el contexto del mercado actual.` },
+                        { role: 'system', content: `Eres un analista financiero conciso e inteligente. Contexto: activo ${ticker}, rango ${timeRange}. REGLAS: 1) Si el usuario saluda o hace una pregunta casual, responde brevemente y amigablemente (1-2 frases). 2) Solo da análisis técnico detallado cuando te lo pidan explícitamente. 3) Mantén respuestas cortas (máx 3-4 frases) a menos que el usuario pida profundizar. 4) Usa datos del gráfico cuando sea relevante. 5) Responde en español.` },
                         ...messages,
                         userMsg
                     ]
@@ -141,13 +141,13 @@ const FinancialForecaster = ({ onClose }) => {
         showlegend: false,
         xaxis: {
             rangeslider: { visible: false },
-            gridcolor: '#334155',
-            tickfont: { color: '#94a3b8', size: 10 },
+            gridcolor: 'rgba(255,255,255,0.06)',
+            tickfont: { color: 'rgba(255,255,255,0.4)', size: 10 },
             type: 'date'
         },
         yaxis: {
-            gridcolor: '#334155',
-            tickfont: { color: '#94a3b8', size: 10 },
+            gridcolor: 'rgba(255,255,255,0.06)',
+            tickfont: { color: 'rgba(255,255,255,0.4)', size: 10 },
             side: 'right',
             autorange: true
         },
@@ -158,44 +158,44 @@ const FinancialForecaster = ({ onClose }) => {
     }), []);
 
     return createPortal(
-        <div className="fixed inset-0 z-[9999] bg-[#0f172a] flex flex-col text-white overflow-hidden">
+        <div className="fixed inset-0 z-[9999] bg-bg-dark flex flex-col text-white overflow-hidden">
             {/* Top Navigation */}
-            <div className="bg-[#1e293b] p-4 flex justify-between items-center border-b border-gray-700 shrink-0 shadow-lg">
+            <div className="bg-bg-elevated p-4 flex justify-between items-center border-b border-white/5 shrink-0 shadow-lg">
                 <div className="flex items-center gap-4">
-                    <h2 className="text-lg md:text-xl font-bold font-heading text-[#00f3ff] flex items-center gap-2">
+                    <h2 className="text-lg md:text-xl font-bold font-heading text-accent-primary flex items-center gap-2">
                         <i className="fa-solid fa-chart-line"></i> FINANCE AI
                     </h2>
                     <button
                         onClick={() => setShowArchitecture(!showArchitecture)}
-                        className="hidden md:flex items-center gap-2 px-3 py-1 bg-[#1e293b] hover:bg-accent-primary/10 text-gray-400 hover:text-accent-primary border border-gray-700 rounded-lg transition-all text-[10px] font-bold tracking-wider uppercase"
+                        className="hidden md:flex items-center gap-2 px-3 py-1 bg-bg-elevated hover:bg-accent-primary/10 text-text-muted hover:text-accent-primary border border-white/10 rounded-[var(--radius-sm)] transition-all text-[10px] font-bold tracking-wider uppercase"
                     >
                         <i className="fa-solid fa-network-wired"></i> {showArchitecture ? "Gráfico" : "Arquitectura"}
                     </button>
-                    <div className="hidden sm:flex bg-black/40 rounded-lg p-0.5 border border-white/5 ml-2">
+                    <div className="hidden sm:flex bg-black/40 rounded-[var(--radius-sm)] p-0.5 border border-white/5 ml-2">
                         {['1D', '1W', '1M', '1Y', 'ALL'].map(r => (
                             <button
                                 key={r}
                                 onClick={() => setTimeRange(r)}
-                                className={`px-3 py-1 rounded-md text-[9px] font-black transition-all ${timeRange === r ? 'bg-[#00f3ff] text-black shadow-[0_0_10px_rgba(0,243,255,0.4)]' : 'text-gray-500 hover:text-white'}`}
+                                className={`px-3 py-1 rounded-md text-[9px] font-black transition-all ${timeRange === r ? 'bg-accent-primary text-bg-dark shadow-glow-primary' : 'text-text-muted hover:text-white'}`}
                             >
                                 {r}
                             </button>
                         ))}
                     </div>
                 </div>
-                <button onClick={onClose} className="flex items-center gap-2 px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 border border-red-500/20 rounded-lg transition-all text-[10px] font-bold tracking-wider uppercase">
+                <button onClick={onClose} className="flex items-center gap-2 px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 border border-red-500/20 rounded-[var(--radius-sm)] transition-all text-[10px] font-bold tracking-wider uppercase">
                     <i className="fas fa-arrow-left"></i> VOLVER
                 </button>
             </div>
 
             <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
                 {/* Main View Area */}
-                <div className="flex-1 flex flex-col p-2 md:p-6 overflow-hidden h-full border-b lg:border-b-0 lg:border-r border-gray-700 relative">
+                <div className="flex-1 flex flex-col p-2 md:p-6 overflow-hidden h-full border-b lg:border-b-0 lg:border-r border-white/5 relative">
 
                     {showArchitecture ? (
                         <div className="flex-1 flex flex-col items-center justify-center space-y-12 animate-fadeIn p-4 overflow-y-auto">
                             <h3 className="text-accent-primary font-heading font-bold uppercase tracking-widest text-sm">Flujo de Análisis Financiero</h3>
-                            <div className="flex flex-col md:flex-row items-center gap-6 bg-[#1e293b]/30 p-8 rounded-2xl border border-white/5 w-full max-w-4xl">
+                            <div className="flex flex-col md:flex-row items-center gap-6 glass-card p-8 rounded-[var(--radius-xl)] w-full max-w-4xl">
                                 <Step icon="fa-database" title="Data Ingestion" desc="OHLC real de mercados globales." />
                                 <Arrow />
                                 <Step icon="fa-brain" title="IA Processing" desc="Análisis mediante Llama 3." />
@@ -210,7 +210,7 @@ const FinancialForecaster = ({ onClose }) => {
                                     <button
                                         key={t}
                                         onClick={() => setTicker(t)}
-                                        className={`px-4 py-1.5 rounded-full text-[10px] md:text-xs font-bold transition-all border ${ticker === t ? 'bg-[#00f3ff]/20 border-[#00f3ff] text-[#00f3ff]' : 'bg-gray-800 border-gray-700 text-gray-400 hover:bg-gray-700'}`}
+                                        className={`px-4 py-1.5 rounded-full text-[10px] md:text-xs font-bold transition-all border ${ticker === t ? 'bg-accent-primary/20 border-accent-primary text-accent-primary' : 'bg-white/5 border-white/10 text-text-muted hover:bg-white/10'}`}
                                     >
                                         {t}
                                     </button>
@@ -223,19 +223,19 @@ const FinancialForecaster = ({ onClose }) => {
                                     <button
                                         key={r}
                                         onClick={() => setTimeRange(r)}
-                                        className={`px-3 py-1.5 rounded-lg text-[9px] font-black transition-all border ${timeRange === r ? 'bg-[#00f3ff] border-[#00f3ff] text-black' : 'bg-gray-800/40 border-white/5 text-gray-500'}`}
+                                        className={`px-3 py-1.5 rounded-[var(--radius-sm)] text-[9px] font-black transition-all border ${timeRange === r ? 'bg-accent-primary border-accent-primary text-bg-dark' : 'bg-white/5 border-white/5 text-text-muted'}`}
                                     >
                                         {r}
                                     </button>
                                 ))}
                             </div>
 
-                            <div className="flex-1 bg-[#1e293b]/50 rounded-xl border border-gray-700 overflow-hidden relative">
+                            <div className="flex-1 bg-bg-elevated/50 rounded-[var(--radius-lg)] border border-white/10 overflow-hidden relative">
                                 {loading && (
-                                    <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#0f172a]/80 backdrop-blur-sm">
+                                    <div className="absolute inset-0 z-10 flex items-center justify-center bg-bg-dark/80 backdrop-blur-sm">
                                         <div className="text-center">
-                                            <div className="w-10 h-10 border-4 border-[#00f3ff] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                                            <p className="text-sm">Analizando Mercados...</p>
+                                            <div className="w-10 h-10 border-4 border-accent-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                                            <p className="text-sm text-text-secondary">Analizando Mercados...</p>
                                         </div>
                                     </div>
                                 )}
@@ -253,9 +253,9 @@ const FinancialForecaster = ({ onClose }) => {
                 </div>
 
                 {/* Chat Section */}
-                <div className="w-full lg:w-[450px] bg-[#111827] flex flex-col overflow-hidden h-[40vh] lg:h-full shrink-0">
-                    <div className="p-4 bg-[#1e293b] border-b border-gray-700 shrink-0 flex justify-between items-center">
-                        <h3 className="text-[10px] font-bold text-[#00f3ff] uppercase tracking-widest flex items-center gap-2">
+                <div className="w-full lg:w-[450px] bg-bg-elevated flex flex-col overflow-hidden h-[40vh] lg:h-full shrink-0">
+                    <div className="p-4 bg-bg-elevated border-b border-white/5 shrink-0 flex justify-between items-center">
+                        <h3 className="text-[10px] font-bold text-accent-primary uppercase tracking-widest flex items-center gap-2 font-heading">
                             <i className="fa-solid fa-robot"></i> Analista Conversacional
                         </h3>
                         <button
@@ -268,42 +268,42 @@ const FinancialForecaster = ({ onClose }) => {
 
                     <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
                         {messages.length === 0 && (
-                            <div className="h-full flex flex-col items-center justify-center text-gray-500 text-center px-6">
+                            <div className="h-full flex flex-col items-center justify-center text-text-muted text-center px-6">
                                 <i className="fa-solid fa-comment-dots text-4xl mb-4 opacity-20"></i>
-                                <p className="text-[11px] md:text-sm">Pregunta sobre el gráfico de <span className="text-[#00f3ff] font-bold">{ticker}</span>.</p>
+                                <p className="text-[11px] md:text-sm">Pregunta sobre el gráfico de <span className="text-accent-primary font-bold">{ticker}</span>.</p>
                             </div>
                         )}
                         {messages.map((msg, i) => (
                             <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                <div className={`max-w-[85%] p-3 rounded-2xl text-sm leading-relaxed ${msg.role === 'user' ? 'bg-[#00f3ff] text-[#000814] rounded-tr-none' : 'bg-[#1e293b] text-gray-200 border border-gray-700 rounded-tl-none'}`}>
+                                <div className={`max-w-[85%] p-3 rounded-[var(--radius-lg)] text-sm leading-relaxed ${msg.role === 'user' ? 'bg-accent-primary/10 border border-accent-primary/20 text-white' : 'bg-white/[0.03] text-white/80 border border-white/5'}`}>
                                     {msg.content}
                                 </div>
                             </div>
                         ))}
                         {chatLoading && (
                             <div className="flex justify-start">
-                                <div className="bg-[#1e293b] p-3 rounded-2xl border border-gray-700 flex gap-1">
-                                    <span className="w-1.5 h-1.5 bg-[#00f3ff] rounded-full animate-bounce"></span>
-                                    <span className="w-1.5 h-1.5 bg-[#00f3ff] rounded-full animate-bounce [animation-delay:0.2s]"></span>
-                                    <span className="w-1.5 h-1.5 bg-[#00f3ff] rounded-full animate-bounce [animation-delay:0.4s]"></span>
+                                <div className="bg-white/[0.03] p-3 rounded-[var(--radius-lg)] border border-white/5 flex gap-1">
+                                    <span className="w-1.5 h-1.5 bg-accent-primary rounded-full animate-bounce"></span>
+                                    <span className="w-1.5 h-1.5 bg-accent-primary rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                                    <span className="w-1.5 h-1.5 bg-accent-primary rounded-full animate-bounce [animation-delay:0.4s]"></span>
                                 </div>
                             </div>
                         )}
                         <div ref={chatEndRef} />
                     </div>
 
-                    <form onSubmit={handleSend} className="p-4 bg-[#1e293b] border-t border-gray-700 shrink-0">
+                    <form onSubmit={handleSend} className="p-4 bg-bg-elevated border-t border-white/5 shrink-0">
                         <div className="flex gap-2">
                             <input
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 placeholder="Escribe tu consulta..."
-                                className="flex-1 bg-[#0f172a] border border-gray-700 rounded-lg px-4 py-2 text-[12px] md:text-sm focus:outline-none focus:border-[#00f3ff] transition-all"
+                                className="flex-1 bg-white/5 border border-white/10 rounded-[var(--radius-md)] px-4 py-2 text-[12px] md:text-sm focus:outline-none focus:border-accent-primary/40 transition-all placeholder:text-text-muted"
                             />
                             <button
                                 type="submit"
                                 disabled={chatLoading}
-                                className="bg-[#00f3ff] hover:bg-[#00d8e6] text-[#000814] w-10 h-10 rounded-lg flex items-center justify-center transition-all disabled:opacity-50"
+                                className="bg-gradient-to-r from-accent-primary to-accent-secondary text-bg-dark w-10 h-10 rounded-[var(--radius-md)] flex items-center justify-center transition-all disabled:opacity-50 hover:shadow-glow-primary"
                             >
                                 <i className="fa-solid fa-paper-plane"></i>
                             </button>

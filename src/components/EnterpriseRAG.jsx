@@ -243,60 +243,60 @@ const EnterpriseRAG = ({ onClose }) => {
     // ─── PANTALLA DE SELECCIÓN DE MODO ───────────────
     if (mode === null) {
         return createPortal(
-            <div className="fixed inset-0 z-[1000] bg-[#0a0d14] flex items-center justify-center text-white overflow-auto">
-                <button onClick={onClose} className="absolute top-6 right-6 p-2 bg-white/5 hover:bg-white/10 rounded-xl text-gray-400 hover:text-white transition-all z-50">
+            <div className="fixed inset-0 z-[1000] bg-bg-dark flex items-center justify-center text-white overflow-auto">
+                <button onClick={onClose} className="absolute top-6 right-6 p-2 bg-white/5 hover:bg-white/10 rounded-xl text-text-secondary hover:text-white transition-all z-50">
                     <i className="fa-solid fa-xmark text-lg"></i>
                 </button>
 
-                <div className="max-w-4xl w-full px-6 py-12">
+                <div className="max-w-4xl w-full px-6 py-12 animate-fadeIn">
                     <div className="text-center mb-16">
-                        <div className="inline-flex items-center gap-3 bg-[#10b981]/10 border border-[#10b981]/20 px-5 py-2 rounded-full mb-8">
-                            <span className="w-2 h-2 bg-[#10b981] rounded-full animate-pulse"></span>
-                            <span className="text-[10px] font-black text-[#10b981] uppercase tracking-[0.3em]">Sistema RAG Operativo</span>
+                        <div className="inline-flex items-center gap-3 bg-accent-primary/10 border border-accent-primary/20 px-5 py-2 rounded-full mb-8">
+                            <span className="w-2 h-2 bg-accent-primary rounded-full animate-pulse"></span>
+                            <span className="text-[10px] font-black text-accent-primary uppercase tracking-[0.3em]">Sistema RAG Operativo</span>
                         </div>
-                        <h1 className="text-4xl md:text-5xl font-black italic tracking-tighter mb-4">Enterprise <span className="text-[#10b981]">RAG</span></h1>
-                        <p className="text-gray-500 text-sm max-w-xl mx-auto leading-relaxed">
+                        <h1 className="text-4xl md:text-5xl font-black italic tracking-tighter mb-4 font-heading">Enterprise <span className="text-accent-primary">RAG</span></h1>
+                        <p className="text-text-secondary text-sm max-w-xl mx-auto leading-relaxed">
                             Motor de Retrieval-Augmented Generation. Indexa documentos, busca fragmentos relevantes con TF-IDF y genera respuestas precisas con cita de fuentes.
                         </p>
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-6">
                         {/* Demo Mode */}
-                        <button onClick={startDemo} className="group p-8 bg-white/[0.03] border border-white/10 rounded-3xl text-left hover:border-[#10b981]/40 hover:bg-[#10b981]/5 transition-all duration-500 active:scale-[0.98]">
-                            <div className="w-14 h-14 bg-[#10b981]/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#10b981]/20 transition-all group-hover:scale-110">
-                                <i className="fa-solid fa-database text-[#10b981] text-xl"></i>
+                        <button onClick={startDemo} className="group p-8 bg-white/[0.03] border border-white/10 rounded-[var(--radius-xl)] text-left hover:border-accent-primary/40 hover:bg-accent-primary/5 transition-all duration-500 active:scale-[0.98]">
+                            <div className="w-14 h-14 bg-accent-primary/10 rounded-[var(--radius-lg)] flex items-center justify-center mb-6 group-hover:bg-accent-primary/20 transition-all group-hover:scale-110">
+                                <i className="fa-solid fa-database text-accent-primary text-xl"></i>
                             </div>
-                            <h3 className="text-xl font-bold mb-2 group-hover:text-[#10b981] transition-colors">Base de Datos Demo</h3>
-                            <p className="text-sm text-gray-500 leading-relaxed mb-6">
+                            <h3 className="text-xl font-bold mb-2 group-hover:text-accent-primary transition-colors">Base de Datos Demo</h3>
+                            <p className="text-sm text-text-secondary leading-relaxed mb-6">
                                 4 documentos corporativos de TechFlow pre-cargados. Puedes editarlos en tiempo real y ver cómo el RAG responde con la información actualizada.
                             </p>
                             <div className="flex flex-wrap gap-2">
                                 {['PDF', 'DOCX', 'Editable', 'Pre-indexado'].map(tag => (
-                                    <span key={tag} className="text-[9px] font-bold uppercase tracking-wider px-2 py-1 bg-white/5 rounded-md text-gray-500">{tag}</span>
+                                    <span key={tag} className="text-[9px] font-bold uppercase tracking-wider px-2 py-1 bg-white/5 rounded-md text-text-muted">{tag}</span>
                                 ))}
                             </div>
                         </button>
 
                         {/* Upload Mode */}
-                        <button onClick={startUpload} className="group p-8 bg-white/[0.03] border border-white/10 rounded-3xl text-left hover:border-indigo-500/40 hover:bg-indigo-500/5 transition-all duration-500 active:scale-[0.98]">
-                            <div className="w-14 h-14 bg-indigo-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-indigo-500/20 transition-all group-hover:scale-110">
-                                <i className="fa-solid fa-cloud-arrow-up text-indigo-400 text-xl"></i>
+                        <button onClick={startUpload} className="group p-8 bg-white/[0.03] border border-white/10 rounded-[var(--radius-xl)] text-left hover:border-accent-secondary/40 hover:bg-accent-secondary/5 transition-all duration-500 active:scale-[0.98]">
+                            <div className="w-14 h-14 bg-accent-secondary/10 rounded-[var(--radius-lg)] flex items-center justify-center mb-6 group-hover:bg-accent-secondary/20 transition-all group-hover:scale-110">
+                                <i className="fa-solid fa-cloud-arrow-up text-accent-secondary text-xl"></i>
                             </div>
-                            <h3 className="text-xl font-bold mb-2 group-hover:text-indigo-400 transition-colors">Subir mis Archivos</h3>
-                            <p className="text-sm text-gray-500 leading-relaxed mb-6">
+                            <h3 className="text-xl font-bold mb-2 group-hover:text-accent-secondary transition-colors">Subir mis Archivos</h3>
+                            <p className="text-sm text-text-secondary leading-relaxed mb-6">
                                 Carga tus propios documentos. El motor extrae el texto, indexa los fragmentos y te permite hacer preguntas basadas en tu contenido real.
                             </p>
                             <div className="flex flex-wrap gap-2">
                                 {['PDF', 'TXT', 'CSV', 'JSON', 'Markdown'].map(tag => (
-                                    <span key={tag} className="text-[9px] font-bold uppercase tracking-wider px-2 py-1 bg-white/5 rounded-md text-gray-500">{tag}</span>
+                                    <span key={tag} className="text-[9px] font-bold uppercase tracking-wider px-2 py-1 bg-white/5 rounded-md text-text-muted">{tag}</span>
                                 ))}
                             </div>
                         </button>
                     </div>
 
                     <div className="mt-12 text-center">
-                        <p className="text-[10px] text-gray-700 font-bold uppercase tracking-widest">
-                            <i className="fa-solid fa-lock mr-2 text-[#10b981]/40"></i>
+                        <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest">
+                            <i className="fa-solid fa-lock mr-2 text-accent-primary/40"></i>
                             Todo el procesamiento ocurre en tu navegador. Ningún documento se envía a servidores externos.
                         </p>
                     </div>
@@ -313,29 +313,29 @@ const EnterpriseRAG = ({ onClose }) => {
 
     // ─── RENDER CHAT + SIDEBAR ───────────────────────
     return createPortal(
-        <div className="fixed inset-0 z-[1000] bg-[#0a0d14] text-white flex flex-col md:flex-row overflow-hidden font-sans">
+        <div className="fixed inset-0 z-[1000] bg-bg-dark text-white flex flex-col md:flex-row overflow-hidden font-body">
 
             {/* ── SIDEBAR ── */}
-            <aside className="w-full md:w-[360px] bg-[#111620] border-r border-white/5 flex flex-col shrink-0 h-[45vh] md:h-full">
+            <aside className="w-full md:w-[360px] bg-bg-elevated border-r border-white/5 flex flex-col shrink-0 h-[45vh] md:h-full">
                 {/* Header */}
                 <div className="p-5 border-b border-white/5 flex items-center justify-between shrink-0">
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-[#10b981]/10 rounded-lg flex items-center justify-center">
-                            <i className="fa-solid fa-brain text-[#10b981] text-sm"></i>
+                        <div className="w-8 h-8 bg-accent-primary/10 rounded-[var(--radius-sm)] flex items-center justify-center">
+                            <i className="fa-solid fa-brain text-accent-primary text-sm"></i>
                         </div>
                         <div>
-                            <h2 className="text-sm font-black tracking-tight">Enterprise RAG</h2>
-                            <span className="text-[9px] text-gray-500 font-bold uppercase tracking-widest flex items-center gap-1">
-                                <span className="w-1.5 h-1.5 bg-[#10b981] rounded-full animate-pulse"></span>
+                            <h2 className="text-sm font-black tracking-tight font-heading">Enterprise RAG</h2>
+                            <span className="text-[9px] text-text-muted font-bold uppercase tracking-widest flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 bg-accent-primary rounded-full animate-pulse"></span>
                                 {mode === 'demo' ? 'Modo Demo' : 'Mis Archivos'} — {documents.length} docs
                             </span>
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
-                        <button onClick={() => { setMode(null); setMessages([]); setDocuments([]); setRagIndex(null); }} className="text-[9px] text-gray-500 hover:text-[#10b981] font-bold uppercase tracking-wider transition-colors">
+                        <button onClick={() => { setMode(null); setMessages([]); setDocuments([]); setRagIndex(null); }} className="text-[9px] text-text-muted hover:text-accent-primary font-bold uppercase tracking-wider transition-colors">
                             <i className="fa-solid fa-arrow-left mr-1"></i> Modos
                         </button>
-                        <button onClick={onClose} className="p-1.5 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition-all md:block hidden">
+                        <button onClick={onClose} className="p-1.5 bg-red-500/10 text-red-400 rounded-[var(--radius-sm)] hover:bg-red-500/20 transition-all md:block hidden">
                             <i className="fa-solid fa-xmark text-xs"></i>
                         </button>
                     </div>
@@ -345,49 +345,49 @@ const EnterpriseRAG = ({ onClose }) => {
                 <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
                     {/* Upload zone (Upload mode) */}
                     {mode === 'upload' && (
-                        <div {...getRootProps()} className={`p-5 border-2 border-dashed rounded-2xl text-center cursor-pointer transition-all ${isDragActive ? 'border-indigo-500 bg-indigo-500/10' : 'border-white/10 hover:border-indigo-500/30'}`}>
+                        <div {...getRootProps()} className={`p-5 border-2 border-dashed rounded-[var(--radius-lg)] text-center cursor-pointer transition-all ${isDragActive ? 'border-accent-secondary bg-accent-secondary/10' : 'border-white/10 hover:border-accent-secondary/30'}`}>
                             <input {...getInputProps()} />
-                            <i className={`fa-solid fa-cloud-arrow-up text-2xl mb-2 ${isDragActive ? 'text-indigo-400 animate-bounce' : 'text-gray-600'}`}></i>
-                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+                            <i className={`fa-solid fa-cloud-arrow-up text-2xl mb-2 ${isDragActive ? 'text-accent-secondary animate-bounce' : 'text-text-muted'}`}></i>
+                            <p className="text-[10px] font-bold text-text-muted uppercase tracking-wider">
                                 {isDragActive ? 'Suelta aquí' : 'Arrastra archivos o haz clic'}
                             </p>
-                            <p className="text-[9px] text-gray-700 mt-1">PDF, TXT, CSV, JSON, MD</p>
+                            <p className="text-[9px] text-text-muted mt-1">PDF, TXT, CSV, JSON, MD</p>
                         </div>
                     )}
 
                     {/* Index status */}
                     {indexing && (
-                        <div className="flex items-center gap-3 p-3 bg-[#10b981]/5 border border-[#10b981]/10 rounded-xl animate-pulse">
-                            <div className="w-4 h-4 border-2 border-[#10b981] border-t-transparent rounded-full animate-spin"></div>
-                            <span className="text-[10px] font-bold text-[#10b981]">Indexando documentos...</span>
+                        <div className="flex items-center gap-3 p-3 bg-accent-primary/5 border border-accent-primary/10 rounded-[var(--radius-md)] animate-pulse">
+                            <div className="w-4 h-4 border-2 border-accent-primary border-t-transparent rounded-full animate-spin"></div>
+                            <span className="text-[10px] font-bold text-accent-primary">Indexando documentos...</span>
                         </div>
                     )}
 
                     {ragIndex && !indexing && (
-                        <div className="flex items-center gap-3 p-3 bg-[#10b981]/5 border border-[#10b981]/10 rounded-xl">
-                            <i className="fa-solid fa-check-circle text-[#10b981] text-sm"></i>
-                            <span className="text-[10px] font-bold text-[#10b981]">{ragIndex.chunks.length} fragmentos indexados</span>
+                        <div className="flex items-center gap-3 p-3 bg-accent-primary/5 border border-accent-primary/10 rounded-[var(--radius-md)]">
+                            <i className="fa-solid fa-check-circle text-accent-primary text-sm"></i>
+                            <span className="text-[10px] font-bold text-accent-primary">{ragIndex.chunks.length} fragmentos indexados</span>
                         </div>
                     )}
 
                     {/* Documents */}
                     <div className="space-y-2">
                         {documents.map(doc => (
-                            <div key={doc.id} className="group bg-white/[0.03] border border-white/5 rounded-xl p-3 hover:border-white/10 transition-all">
+                            <div key={doc.id} className="group bg-white/[0.03] border border-white/5 rounded-[var(--radius-md)] p-3 hover:border-accent-primary/20 transition-all">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-3 min-w-0">
-                                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${doc.type === 'PDF' ? 'bg-red-500/10 text-red-400' : doc.type === 'CSV' ? 'bg-green-500/10 text-green-400' : doc.type === 'JSON' ? 'bg-yellow-500/10 text-yellow-400' : 'bg-blue-500/10 text-blue-400'}`}>
+                                        <div className={`w-8 h-8 rounded-[var(--radius-sm)] flex items-center justify-center shrink-0 ${doc.type === 'PDF' ? 'bg-red-500/10 text-red-400' : doc.type === 'CSV' ? 'bg-accent-primary/10 text-accent-primary' : doc.type === 'JSON' ? 'bg-yellow-500/10 text-yellow-400' : 'bg-accent-secondary/10 text-accent-secondary'}`}>
                                             <i className={`fa-solid text-[10px] ${doc.type === 'PDF' ? 'fa-file-pdf' : doc.type === 'CSV' ? 'fa-file-csv' : doc.type === 'JSON' ? 'fa-file-code' : 'fa-file-lines'}`}></i>
                                         </div>
                                         <div className="min-w-0">
                                             <p className="text-[11px] font-bold truncate">{doc.name}</p>
-                                            <p className="text-[9px] text-gray-600">{doc.content.length} chars • {doc.type}</p>
+                                            <p className="text-[9px] text-text-muted">{doc.content.length} chars • {doc.type}</p>
                                         </div>
                                     </div>
                                     {mode === 'demo' && (
                                         <button
                                             onClick={() => { setEditingDoc(doc.id); setEditContent(doc.content); }}
-                                            className="text-[9px] text-gray-600 hover:text-[#10b981] font-bold uppercase opacity-0 group-hover:opacity-100 transition-all"
+                                            className="text-[9px] text-text-muted hover:text-accent-primary font-bold uppercase opacity-0 group-hover:opacity-100 transition-all"
                                         >
                                             <i className="fa-solid fa-pen-to-square"></i>
                                         </button>
@@ -402,7 +402,7 @@ const EnterpriseRAG = ({ onClose }) => {
                                                     return updated;
                                                 });
                                             }}
-                                            className="text-[9px] text-gray-600 hover:text-red-400 font-bold opacity-0 group-hover:opacity-100 transition-all"
+                                            className="text-[9px] text-text-muted hover:text-red-400 font-bold opacity-0 group-hover:opacity-100 transition-all"
                                         >
                                             <i className="fa-solid fa-trash"></i>
                                         </button>
@@ -415,16 +415,16 @@ const EnterpriseRAG = ({ onClose }) => {
                     {/* Retrieval Results */}
                     {lastResults.length > 0 && (
                         <div className="mt-4 pt-4 border-t border-white/5">
-                            <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-3">
+                            <p className="text-[9px] font-black text-text-muted uppercase tracking-widest mb-3">
                                 <i className="fa-solid fa-magnifying-glass mr-1"></i> Últimos fragmentos recuperados
                             </p>
                             {lastResults.map((r, i) => (
-                                <div key={i} className="mb-2 p-3 bg-[#10b981]/5 border border-[#10b981]/10 rounded-xl">
+                                <div key={i} className="mb-2 p-3 bg-accent-primary/5 border border-accent-primary/10 rounded-[var(--radius-md)]">
                                     <div className="flex justify-between items-center mb-1">
-                                        <span className="text-[9px] font-bold text-[#10b981] truncate">{r.chunk.source}</span>
-                                        <span className="text-[8px] font-bold text-gray-500 shrink-0 ml-2">{(r.score * 100).toFixed(0)}%</span>
+                                        <span className="text-[9px] font-bold text-accent-primary truncate">{r.chunk.source}</span>
+                                        <span className="text-[8px] font-bold text-text-muted shrink-0 ml-2">{(r.score * 100).toFixed(0)}%</span>
                                     </div>
-                                    <p className="text-[9px] text-gray-500 leading-relaxed line-clamp-3">{r.chunk.text.slice(0, 150)}...</p>
+                                    <p className="text-[9px] text-text-secondary leading-relaxed line-clamp-3">{r.chunk.text.slice(0, 150)}...</p>
                                 </div>
                             ))}
                         </div>
@@ -433,31 +433,32 @@ const EnterpriseRAG = ({ onClose }) => {
 
                 {/* Mobile close */}
                 <div className="p-3 border-t border-white/5 md:hidden shrink-0">
-                    <button onClick={onClose} className="w-full py-2 bg-red-500/10 text-red-400 rounded-xl text-xs font-bold">Cerrar</button>
+                    <button onClick={onClose} className="w-full py-2 bg-red-500/10 text-red-400 rounded-[var(--radius-md)] text-xs font-bold">Cerrar</button>
                 </div>
             </aside>
 
             {/* ── MAIN AREA ── */}
-            <main className="flex-1 flex flex-col bg-[#0a0d14] overflow-hidden">
+            <main className="flex-1 flex flex-col bg-bg-dark overflow-hidden">
                 {/* Edit Modal */}
                 {editingDoc !== null && (
-                    <div className="absolute inset-0 z-[200] bg-black/80 backdrop-blur-lg flex items-center justify-center p-4">
-                        <div className="bg-[#151921] rounded-3xl border border-white/10 max-w-3xl w-full max-h-[80vh] flex flex-col shadow-2xl">
+                    <div className="absolute inset-0 z-[200] bg-black/80 backdrop-blur-lg flex items-center justify-center p-4 md:p-8">
+                        <div className="bg-bg-elevated rounded-[var(--radius-xl)] border border-white/10 w-full max-w-5xl h-[90vh] flex flex-col shadow-2xl">
                             <div className="p-5 border-b border-white/5 flex justify-between items-center shrink-0">
                                 <div>
                                     <h3 className="font-bold text-sm">Editar Documento</h3>
-                                    <p className="text-[9px] text-gray-500 mt-1">Los cambios se re-indexarán automáticamente</p>
+                                    <p className="text-[9px] text-text-muted mt-1">Los cambios se re-indexarán automáticamente</p>
                                 </div>
-                                <button onClick={() => setEditingDoc(null)} className="text-gray-500 hover:text-white"><i className="fa-solid fa-xmark"></i></button>
+                                <button onClick={() => setEditingDoc(null)} className="text-text-muted hover:text-white"><i className="fa-solid fa-xmark"></i></button>
                             </div>
                             <textarea
                                 value={editContent}
                                 onChange={(e) => setEditContent(e.target.value)}
-                                className="flex-1 p-5 bg-transparent text-xs leading-relaxed resize-none focus:outline-none text-gray-300 custom-scrollbar font-mono"
+                                className="flex-1 p-6 bg-transparent text-sm leading-relaxed resize-none focus:outline-none text-text-secondary custom-scrollbar font-mono"
+                                style={{ minHeight: '300px' }}
                             />
                             <div className="p-4 border-t border-white/5 flex justify-end gap-3 shrink-0">
-                                <button onClick={() => setEditingDoc(null)} className="px-4 py-2 text-[10px] font-bold text-gray-500 hover:text-white transition-colors">Cancelar</button>
-                                <button onClick={saveEdit} className="px-5 py-2 bg-[#10b981] text-black text-[10px] font-black rounded-xl uppercase tracking-wider hover:bg-[#0ea372] transition-all active:scale-95">
+                                <button onClick={() => setEditingDoc(null)} className="px-4 py-2 text-[10px] font-bold text-text-muted hover:text-white transition-colors">Cancelar</button>
+                                <button onClick={saveEdit} className="btn btn-primary px-5 py-2 text-[10px] rounded-[var(--radius-md)] active:scale-95">
                                     <i className="fa-solid fa-check mr-1"></i> Guardar y Re-indexar
                                 </button>
                             </div>
@@ -467,11 +468,11 @@ const EnterpriseRAG = ({ onClose }) => {
 
                 {/* Architecture Toggle */}
                 <div className="hidden md:flex items-center justify-between p-4 border-b border-white/5 shrink-0">
-                    <button onClick={() => setShowArchitecture(!showArchitecture)} className="text-[10px] font-bold text-gray-500 hover:text-[#10b981] transition-colors uppercase tracking-widest">
+                    <button onClick={() => setShowArchitecture(!showArchitecture)} className="text-[10px] font-bold text-text-muted hover:text-accent-primary transition-colors uppercase tracking-widest">
                         <i className={`fa-solid ${showArchitecture ? 'fa-comments' : 'fa-sitemap'} mr-2`}></i>
                         {showArchitecture ? 'Volver al chat' : 'Ver Arquitectura RAG'}
                     </button>
-                    <button onClick={onClose} className="p-2 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition-all">
+                    <button onClick={onClose} className="p-2 bg-red-500/10 text-red-400 rounded-[var(--radius-sm)] hover:bg-red-500/20 transition-all">
                         <i className="fa-solid fa-xmark text-xs"></i>
                     </button>
                 </div>
@@ -479,8 +480,8 @@ const EnterpriseRAG = ({ onClose }) => {
                 {showArchitecture ? (
                     /* Architecture View */
                     <div className="flex-1 flex flex-col items-center justify-center p-8 animate-fadeIn overflow-y-auto custom-scrollbar">
-                        <h3 className="text-xs font-black text-[#10b981] uppercase tracking-[0.3em] mb-12">Pipeline RAG en Tiempo Real</h3>
-                        <div className="flex flex-col md:flex-row items-center gap-8 justify-center p-12 bg-white/[0.02] rounded-[40px] border border-white/5">
+                        <h3 className="text-xs font-black text-accent-primary uppercase tracking-[0.3em] mb-12 font-heading">Pipeline RAG en Tiempo Real</h3>
+                        <div className="flex flex-col md:flex-row items-center gap-8 justify-center p-12 glass-card rounded-[var(--radius-xl)] border border-white/5">
                             <Step icon="fa-file-medical" title="Ingesta" desc="PDF / TXT / CSV / JSON" />
                             <Arrow />
                             <Step icon="fa-scissors" title="Chunking" desc="500 chars + overlap" />
@@ -489,11 +490,11 @@ const EnterpriseRAG = ({ onClose }) => {
                             <Arrow />
                             <Step icon="fa-brain" title="Groq LLM" desc="Llama 3.3 70B" />
                         </div>
-                        <div className="mt-12 p-6 bg-[#10b981]/5 border border-[#10b981]/10 rounded-2xl max-w-2xl w-full">
-                            <h4 className="text-[#10b981] font-bold text-xs flex items-center gap-2 mb-3">
+                        <div className="mt-12 p-6 bg-accent-primary/5 border border-accent-primary/10 rounded-[var(--radius-lg)] max-w-2xl w-full">
+                            <h4 className="text-accent-primary font-bold text-xs flex items-center gap-2 mb-3">
                                 <i className="fa-solid fa-shield-halved"></i> Procesamiento Local
                             </h4>
-                            <p className="text-gray-500 text-[11px] leading-relaxed">
+                            <p className="text-text-secondary text-[11px] leading-relaxed">
                                 Todo el chunking e indexación ocurre en tu navegador. Solo la pregunta + fragmentos relevantes se envían al LLM. Tus documentos nunca se almacenan en servidores externos.
                             </p>
                         </div>
@@ -504,13 +505,13 @@ const EnterpriseRAG = ({ onClose }) => {
                         <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar">
                             {messages.length === 0 && (
                                 <div className="flex flex-col items-center justify-center h-full text-center">
-                                    <div className="w-20 h-20 bg-white/[0.03] rounded-[30px] flex items-center justify-center mb-8 border border-white/5">
-                                        <i className="fa-solid fa-comments text-3xl text-gray-700"></i>
+                                    <div className="w-20 h-20 bg-white/[0.03] rounded-[var(--radius-xl)] flex items-center justify-center mb-8 border border-white/5">
+                                        <i className="fa-solid fa-comments text-3xl text-text-muted"></i>
                                     </div>
-                                    <h3 className="text-xl font-bold mb-2 text-gray-300">
+                                    <h3 className="text-xl font-bold mb-2 text-white/80">
                                         {documents.length > 0 ? '¿Qué necesitas saber?' : 'Carga documentos para comenzar'}
                                     </h3>
-                                    <p className="text-xs text-gray-600 max-w-md mb-8">
+                                    <p className="text-xs text-text-muted max-w-md mb-8">
                                         {documents.length > 0
                                             ? `He indexado ${ragIndex?.chunks.length || 0} fragmentos de ${documents.length} documentos. Pregúntame lo que quieras.`
                                             : 'Sube archivos desde el panel lateral para empezar a hacer preguntas.'
@@ -519,8 +520,8 @@ const EnterpriseRAG = ({ onClose }) => {
                                     {documents.length > 0 && (
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-lg w-full">
                                             {suggestedQuestions.map(q => (
-                                                <button key={q} onClick={() => setInput(q)} className="text-left text-[11px] p-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 hover:border-white/10 text-gray-500 hover:text-white transition-all truncate">
-                                                    <i className="fa-solid fa-arrow-right text-[#10b981] mr-2 text-[8px]"></i>{q}
+                                                <button key={q} onClick={() => setInput(q)} className="text-left text-[11px] p-3 rounded-[var(--radius-md)] bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 hover:border-accent-primary/20 text-text-muted hover:text-white transition-all truncate">
+                                                    <i className="fa-solid fa-arrow-right text-accent-primary mr-2 text-[8px]"></i>{q}
                                                 </button>
                                             ))}
                                         </div>
@@ -530,15 +531,15 @@ const EnterpriseRAG = ({ onClose }) => {
 
                             {messages.map((msg, i) => (
                                 <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-slideIn`}>
-                                    <div className={`max-w-[80%] rounded-2xl p-4 ${msg.role === 'user'
-                                        ? 'bg-[#10b981]/10 border border-[#10b981]/20'
+                                    <div className={`max-w-[80%] rounded-[var(--radius-lg)] p-4 ${msg.role === 'user'
+                                        ? 'bg-accent-primary/10 border border-accent-primary/20'
                                         : 'bg-white/[0.03] border border-white/5'
                                         }`}>
-                                        <p className="text-xs leading-relaxed whitespace-pre-wrap text-gray-300">{msg.content}</p>
+                                        <p className="text-xs leading-relaxed whitespace-pre-wrap text-white/80">{msg.content}</p>
                                         {msg.sources && msg.sources.length > 0 && (
                                             <div className="mt-3 pt-3 border-t border-white/5 flex flex-wrap gap-2">
                                                 {msg.sources.map((s, j) => (
-                                                    <span key={j} className="text-[8px] font-bold text-[#10b981]/60 bg-[#10b981]/5 px-2 py-1 rounded-md">
+                                                    <span key={j} className="text-[8px] font-bold text-accent-primary/60 bg-accent-primary/5 px-2 py-1 rounded-md">
                                                         <i className="fa-solid fa-file mr-1"></i>{s.name} ({(s.score * 100).toFixed(0)}%)
                                                     </span>
                                                 ))}
@@ -550,13 +551,13 @@ const EnterpriseRAG = ({ onClose }) => {
 
                             {loading && (
                                 <div className="flex justify-start animate-slideIn">
-                                    <div className="bg-white/[0.03] border border-white/5 p-4 rounded-2xl flex items-center gap-3">
+                                    <div className="bg-white/[0.03] border border-white/5 p-4 rounded-[var(--radius-lg)] flex items-center gap-3">
                                         <div className="flex gap-1">
-                                            <span className="w-2 h-2 bg-[#10b981] rounded-full animate-bounce"></span>
-                                            <span className="w-2 h-2 bg-[#10b981] rounded-full animate-bounce [animation-delay:0.15s]"></span>
-                                            <span className="w-2 h-2 bg-[#10b981] rounded-full animate-bounce [animation-delay:0.3s]"></span>
+                                            <span className="w-2 h-2 bg-accent-primary rounded-full animate-bounce"></span>
+                                            <span className="w-2 h-2 bg-accent-primary rounded-full animate-bounce [animation-delay:0.15s]"></span>
+                                            <span className="w-2 h-2 bg-accent-primary rounded-full animate-bounce [animation-delay:0.3s]"></span>
                                         </div>
-                                        <span className="text-[9px] text-gray-500 font-bold">Buscando en {ragIndex?.chunks.length} fragmentos...</span>
+                                        <span className="text-[9px] text-text-muted font-bold">Buscando en {ragIndex?.chunks.length} fragmentos...</span>
                                     </div>
                                 </div>
                             )}
@@ -564,7 +565,7 @@ const EnterpriseRAG = ({ onClose }) => {
                         </div>
 
                         {/* Input */}
-                        <form onSubmit={handleSend} className="p-4 border-t border-white/5 shrink-0 bg-[#0d1017]">
+                        <form onSubmit={handleSend} className="p-4 border-t border-white/5 shrink-0 bg-bg-elevated">
                             <div className="relative max-w-3xl mx-auto">
                                 <input
                                     type="text"
@@ -572,12 +573,12 @@ const EnterpriseRAG = ({ onClose }) => {
                                     onChange={(e) => setInput(e.target.value)}
                                     placeholder={documents.length > 0 ? "Pregunta sobre tus documentos..." : "Sube documentos primero..."}
                                     disabled={!ragIndex}
-                                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-3.5 pl-5 pr-14 text-sm focus:outline-none focus:border-[#10b981]/40 transition-all disabled:opacity-30 placeholder:text-gray-600"
+                                    className="w-full bg-white/5 border border-white/10 rounded-[var(--radius-lg)] py-3.5 pl-5 pr-14 text-sm focus:outline-none focus:border-accent-primary/40 transition-all disabled:opacity-30 placeholder:text-text-muted"
                                 />
                                 <button
                                     type="submit"
                                     disabled={loading || !ragIndex}
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-[#10b981] text-black rounded-xl flex items-center justify-center hover:bg-[#0ea372] transition-all disabled:opacity-30 active:scale-90"
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-gradient-to-r from-accent-primary to-accent-secondary text-bg-dark rounded-[var(--radius-md)] flex items-center justify-center hover:shadow-glow-primary transition-all disabled:opacity-30 active:scale-90"
                                 >
                                     <i className="fa-solid fa-arrow-up font-bold text-sm"></i>
                                 </button>
