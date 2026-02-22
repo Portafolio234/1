@@ -1,6 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import * as pdfjsLib from 'pdfjs-dist';
 
+// Configuración del worker de PDF.js para Vite/Vercel
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+
 export const usePdfRenderer = (canvasRef) => {
     const [pdfDoc, setPdfDoc] = useState(null);
     const [loading, setLoading] = useState(false);
