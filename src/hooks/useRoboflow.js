@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 const WORKFLOW_URL = "https://serverless.roboflow.com/detector-de-puertas/workflows/detect-count-and-visualize-10";
-const API_KEY = import.meta.env.VITE_ROBOFLOW_API_KEY;
+const API_KEY = import.meta.env.VITE_ROBOFLOW_API_KEY || "hKrCyLFvEqmxmyVGuMfF";
+
 
 export const useRoboflow = () => {
     const findPredictions = (data) => {
