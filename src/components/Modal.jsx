@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { useModal } from '../context/ModalContext';
 
 const Modal = ({ id, title, children }) => {
@@ -6,7 +7,7 @@ const Modal = ({ id, title, children }) => {
 
     if (activeModal !== id) return null;
 
-    return (
+    return createPortal(
         <div className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/80 backdrop-blur-sm p-5 animate-fadeIn" onClick={closeModal}>
             <div
                 className="bg-card-bg border border-accent-secondary p-10 rounded-xl shadow-[0_0_50px_rgba(188,19,254,0.2)] w-full max-w-3xl relative max-h-[90vh] overflow-y-auto"
@@ -21,7 +22,8 @@ const Modal = ({ id, title, children }) => {
                 <h3 className="text-2xl font-heading mb-5 text-white">{title}</h3>
                 {children}
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };
 

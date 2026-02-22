@@ -25,11 +25,11 @@ const ParticlesBackground = () => {
         }
 
         const handleMouseMove = (event) => {
-            mouse.x = event.x;
-            mouse.y = event.y;
+            mouse.x = event.clientX;
+            mouse.y = event.clientY;
         };
 
-        window.addEventListener('mousemove', handleMouseMove);
+        window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
         class Particle {
             constructor() {
@@ -43,27 +43,26 @@ const ParticlesBackground = () => {
             }
 
             update() {
+                if (mouse.x === null) return;
+
                 let dx = mouse.x - this.x;
                 let dy = mouse.y - this.y;
                 let distance = Math.sqrt(dx * dx + dy * dy);
-                let forceDirectionX = dx / distance;
-                let forceDirectionY = dy / distance;
-                let maxDistance = mouse.radius;
-                let force = (maxDistance - distance) / maxDistance;
-                let directionX = forceDirectionX * force * this.density;
-                let directionY = forceDirectionY * force * this.density;
 
                 if (distance < mouse.radius) {
+                    let forceDirectionX = dx / distance;
+                    let forceDirectionY = dy / distance;
+                    let force = (mouse.radius - distance) / mouse.radius;
+                    let directionX = forceDirectionX * force * this.density;
+                    let directionY = forceDirectionY * force * this.density;
                     this.x -= directionX;
                     this.y -= directionY;
                 } else {
                     if (this.x !== this.baseX) {
-                        let dx = this.x - this.baseX;
-                        this.x -= dx / 10;
+                        this.x -= (this.x - this.baseX) / 10;
                     }
                     if (this.y !== this.baseY) {
-                        let dy = this.y - this.baseY;
-                        this.y -= dy / 10;
+                        this.y -= (this.y - this.baseY) / 10;
                     }
                 }
             }
@@ -77,15 +76,15 @@ const ParticlesBackground = () => {
             }
         }
 
-        function initParticles() {
+        const initParticles = () => {
             particlesArray = [];
             const numberOfParticles = Math.min((canvas.width * canvas.height) / 9000, 150);
             for (let i = 0; i < numberOfParticles; i++) {
                 particlesArray.push(new Particle());
             }
-        }
+        };
 
-        function connectParticles(index) {
+        const connectParticles = (index) => {
             for (let j = index; j < particlesArray.length; j++) {
                 const dx = particlesArray[index].x - particlesArray[j].x;
                 const dy = particlesArray[index].y - particlesArray[j].y;
@@ -100,9 +99,9 @@ const ParticlesBackground = () => {
                     ctx.stroke();
                 }
             }
-        }
+        };
 
-        function animateParticles() {
+        const animateParticles = () => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             for (let i = 0; i < particlesArray.length; i++) {
                 particlesArray[i].update();
@@ -110,14 +109,14 @@ const ParticlesBackground = () => {
                 connectParticles(i);
             }
             animationFrameId = requestAnimationFrame(animateParticles);
-        }
+        };
 
         const handleResize = () => {
             setCanvasSize();
             initParticles();
         };
 
-        window.addEventListener('resize', handleResize);
+        window.addEventListener('resize', handleResize, { passive: true });
 
         initParticles();
         animateParticles();
