@@ -88,12 +88,42 @@ const FinancialForecaster = ({ onClose }) => {
     }, []);
 
     useEffect(() => {
+        let isMounted = true;
         setLoading(true);
-        const timer = setTimeout(() => {
-            setChartData(generateMockData(ticker, timeRange));
-            setLoading(false);
-        }, 800);
-        return () => clearTimeout(timer);
+
+        const fetchData = async () => {
+            try {
+                // Intento de obtener datos reales
+                const response = await fetch(`/api/market?symbol=${ticker}&range=${timeRange}`);
+                if (!response.ok) throw new Error('API Real falló');
+
+                const data = await response.json();
+                if (!isMounted) return;
+
+                setChartData([{
+                    x: data.dates,
+                    open: data.open,
+                    high: data.high,
+                    low: data.low,
+                    close: data.close,
+                    type: 'candlestick',
+                    xaxis: 'x',
+                    yaxis: 'y',
+                    increasing: { line: { color: '#00f3ff', width: 1.5 } },
+                    decreasing: { line: { color: '#ff4d4d', width: 1.5 } }
+                }]);
+            } catch (error) {
+                console.warn("Real data fetch failed, using mock fallback:", error);
+                if (isMounted) {
+                    setChartData(generateMockData(ticker, timeRange));
+                }
+            } finally {
+                if (isMounted) setLoading(false);
+            }
+        };
+
+        fetchData();
+        return () => { isMounted = false; };
     }, [ticker, timeRange, generateMockData]);
 
     const handleSend = useCallback(async (e) => {
@@ -196,7 +226,7 @@ const FinancialForecaster = ({ onClose }) => {
                         <div className="flex-1 flex flex-col items-center justify-center space-y-12 animate-fadeIn p-4 overflow-y-auto">
                             <h3 className="text-accent-primary font-heading font-bold uppercase tracking-widest text-sm">Flujo de Análisis Financiero</h3>
                             <div className="flex flex-col md:flex-row items-center gap-6 glass-card p-8 rounded-[var(--radius-xl)] w-full max-w-4xl">
-                                <Step icon="fa-database" title="Data Ingestion" desc="OHLC real de mercados globales." />
+                                <Step icon="fa-database" title="Data Ingestion" desc="OHLC real vía Yahoo Finance API." />
                                 <Arrow />
                                 <Step icon="fa-brain" title="IA Processing" desc="Análisis mediante Llama 3." />
                                 <Arrow />

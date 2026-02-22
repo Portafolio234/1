@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import handler from './api/chat.js';
+import chatHandler from './api/chat.js';
+import marketHandler from './api/market.js';
 
 dotenv.config();
 
@@ -14,13 +15,22 @@ app.use((req, res, next) => {
     next();
 });
 
-// Endpoint Vercel
+// Endpoint Chat (Vercel)
 app.post('/api/chat', async (req, res) => {
     try {
-        console.log("Invocando handler Vercel...");
-        await handler(req, res);
+        await chatHandler(req, res);
     } catch (error) {
-        console.error("Error en handler:", error);
+        console.error("Error en chat handler:", error);
+        if (!res.headersSent) res.status(500).json({ error: error.message });
+    }
+});
+
+// Endpoint Market (Vercel)
+app.get('/api/market', async (req, res) => {
+    try {
+        await marketHandler(req, res);
+    } catch (error) {
+        console.error("Error en market handler:", error);
         if (!res.headersSent) res.status(500).json({ error: error.message });
     }
 });
