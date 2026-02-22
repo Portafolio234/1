@@ -1,123 +1,168 @@
-# 🌌 Leonardo Nieto Cortés | Portfolio & AI Solutions
+# Leonardo Nieto Cortés — Portfolio & AI Solutions
 
-[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
-[![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
-[![Deployed](https://img.shields.io/badge/Status-Live-success?style=for-the-badge)](https://Portafolio234.github.io/1)
+[![React](https://img.shields.io/badge/React-18.2-61DAFB?style=flat-square&logo=react&logoColor=white)](https://reactjs.org/)
+[![Vite](https://img.shields.io/badge/Vite-5.2-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Deploy](https://img.shields.io/badge/Vercel-Deployed-000?style=flat-square&logo=vercel)](https://portafolio234.vercel.app)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
-Este es un portafolio de ingeniería de software de alto rendimiento, diseñado como una **Single Page Application (SPA)** moderna que integra soluciones reales de Inteligencia Artificial.
+Portafolio profesional construido como una SPA con React y Vite. Incluye tres demos interactivas de IA que se ejecutan directamente en el navegador o mediante serverless functions.
 
 ---
 
-## 🏗️ Arquitectura del Sistema
+## Arquitectura
 
-El proyecto sigue principios de **Clean Code** y una arquitectura desacoplada basada en componentes modulares y hooks personalizados.
-
-```mermaid
-graph TD
-    App[App.jsx] --> Provider[ModalProvider]
-    Provider --> BG[ParticlesBackground]
-    Provider --> Projects[Projects Section]
-    Projects --> P1[Door Detector AI]
-    Projects --> P2[Financial Forecaster AI]
-    Projects --> P3[Enterprise RAG AI]
-
-    subgraph "Core Architecture"
-        P1 --> Hook1[useRoboflow]
-        P1 --> Hook2[usePdfRenderer]
-        P1 --> Portal[React Portals]
-    end
-
-    subgraph "State Management"
-        Provider --> Context[Context API]
-    end
+```
+├── api/
+│   └── chat.js                  # Vercel Serverless Function (Groq proxy)
+├── public/
+│   └── pdfs/                    # Planos PDF de ejemplo
+├── src/
+│   ├── components/
+│   │   ├── DoorDetectorDemo.jsx # Demo: detección de puertas con Computer Vision
+│   │   ├── EnterpriseRAG.jsx    # Demo: RAG con TF-IDF en el cliente
+│   │   ├── FinancialForecaster.jsx # Demo: análisis financiero con Plotly + LLM
+│   │   ├── Header.jsx           # Navegación principal
+│   │   ├── Hero.jsx             # Sección de presentación
+│   │   ├── Projects.jsx         # Grid de proyectos
+│   │   ├── ProjectCard.jsx      # Tarjeta individual de proyecto
+│   │   ├── Skills.jsx           # Sección de habilidades técnicas
+│   │   ├── About.jsx            # Sección sobre mí
+│   │   ├── ContactSection.jsx   # Formulario de contacto
+│   │   ├── ParticlesBackground.jsx # Fondo animado con Canvas
+│   │   ├── Modal.jsx            # Modal genérico reutilizable
+│   │   ├── Step.jsx             # Componente de paso (flujos de arquitectura)
+│   │   ├── Arrow.jsx            # Flecha de flujo entre pasos
+│   │   └── FooterSection.jsx    # Pie de página
+│   ├── context/
+│   │   └── ModalContext.jsx     # Context API para gestión de modales
+│   ├── data/
+│   │   ├── marketData.js        # Generador de datos mock financieros
+│   │   └── inventoryData.js     # Datos de ejemplo para RAG
+│   ├── hooks/
+│   │   ├── usePdfRenderer.js    # Renderizado de PDF a Canvas con PDF.js
+│   │   └── useRoboflow.js       # Integración con Roboflow API
+│   ├── pages/
+│   │   └── Home.jsx             # Página principal (compose de secciones)
+│   ├── utils/
+│   │   └── ragEngine.js         # Motor RAG: chunking, TF-IDF, búsqueda coseno
+│   ├── App.jsx                  # Router principal
+│   ├── main.jsx                 # Entry point
+│   └── index.css                # Design system (tokens CSS + Tailwind)
+├── vercel.json                  # Configuración de rewrites para SPA
+├── vite.config.js               # Configuración de Vite
+└── tailwind.config.js           # Tokens de diseño extendidos
 ```
 
-### 💎 Características de Ingeniería
+### Rutas
 
-- **React Portals**: Gestión de modales fuera del árbol jerárquico del DOM para evitar conflictos de apilamiento (z-index).
-- **Custom Hooks**: Abstracción de lógica compleja (PDF rendering, API calls) para maximizar la reutilización.
-- **Context API**: Manejo de estado global para una experiencia de usuario fluida y sin "prop drilling".
-- **Optimización 120Hz**: Animaciones de partículas optimizadas para pantallas de alta frecuencia.
-
----
-
-## 🤖 Showcase de IA
-
-### 🗺️ Detector de Puertas Arquitectónico
-
-- **Tecnología**: Computer Vision con Roboflow API.
-- **Funcionalidad**: Renderizado de planos PDF complejos en Canvas y detección en tiempo real de elementos mediante IA.
-- **Reto Técnico**: Procesamiento de archivos PDF pesados y mapeo de coordenadas IA sobre lienzos dinámicos.
-
-### 📈 AI Financial Forecaster
-
-- **Tecnología**: Plotly.js + Groq IA (Llama 3).
-- **Funcionalidad**: Análisis predictivo de mercados financieros con chat contextual que entiende los datos actuales del gráfico.
+| Ruta | Componente | Descripción |
+|:---|:---|:---|
+| `/` | `Home` | Página principal del portafolio |
+| `/demo/detector` | `DoorDetectorDemo` | Demo de detección de puertas |
+| `/demo/finance` | `FinancialForecaster` | Demo de análisis financiero |
+| `/demo/rag` | `EnterpriseRAG` | Demo de RAG empresarial |
 
 ---
 
-## 🛠️ Stack Tecnológico
+## Demos de IA
+
+### Detector de Puertas Arquitectónico
+
+Permite cargar planos PDF y detectar puertas mediante Computer Vision.
+
+- **Pipeline**: PDF.js → Canvas rendering → Crop de zona → Roboflow YOLO v10
+- **Interacción**: El usuario dibuja rectángulos sobre el plano para seleccionar zonas de análisis. En móvil, incluye modo dibujo táctil dedicado.
+- **Hooks**: `usePdfRenderer` (renderizado PDF a alta resolución), `useRoboflow` (llamada a API de inferencia).
+
+### AI Financial Forecaster
+
+Visualización de datos financieros con chat contextual impulsado por LLM.
+
+- **Gráfico**: Plotly.js con velas japonesas (OHLC), rangos configurables (1D–1A).
+- **Chat**: Envía mensajes al endpoint `/api/chat`, que proxea a Groq Cloud (Llama 3.3 70B).
+- **Datos**: Generados proceduralmente en `marketData.js` para demostración sin dependencias externas.
+
+### Enterprise RAG
+
+Sistema Retrieval-Augmented Generation que opera íntegramente en el navegador.
+
+- **Motor** (`ragEngine.js`): Chunking con overlap → índice TF-IDF invertido → búsqueda por similitud coseno.
+- **Formatos soportados**: PDF, TXT, CSV, JSON, Markdown.
+- **LLM**: Las respuestas se generan via Groq Cloud, citando fuentes del documento indexado.
+- **Modos**: Demo (documentos preconfigurados) y Upload (documentos del usuario).
+
+---
+
+## Stack Tecnológico
 
 | Capa | Tecnologías |
-| :--- | :--- |
-| **Frontend** | React 18, Vite |
-| **Estilos** | Tailwind CSS 3.4, Vanilla CSS Animations |
-| **IA/ML** | Roboflow API, Groq Cloud (LLMs) |
-| **Visualización** | Plotly.js, HTML5 Canvas |
-| **Documentación** | Mermaid.js, Markdown |
+|:---|:---|
+| **Frontend** | React 18, React Router 7, Vite 5 |
+| **Estilos** | Tailwind CSS 3.4, CSS custom properties (design tokens) |
+| **IA / ML** | Roboflow API (YOLO v10), Groq Cloud (Llama 3.3 70B) |
+| **Visualización** | Plotly.js, HTML5 Canvas, PDF.js |
+| **Backend** | Vercel Serverless Functions (proxy de API keys) |
+| **Deploy** | Vercel (auto-deploy desde `main`) |
 
 ---
 
-## 🚀 Guía de Inicio Rápido
+## Variables de Entorno
 
-### Requisitos Previos
+| Variable | Servicio | Uso |
+|:---|:---|:---|
+| `VITE_ROBOFLOW_API_KEY` | [Roboflow](https://roboflow.com) | Inferencia de Computer Vision (cliente) |
+| `GROQ_API_KEY` | [Groq](https://console.groq.com) | Chat completions via serverless function (servidor) |
 
-- Node.js (v18+)
-- NPM o Yarn
+---
+
+## Inicio Rápido
+
+### Requisitos
+
+- Node.js v18+
+- Cuentas en Roboflow y Groq (para API keys)
 
 ### Instalación
 
-1. **Clonar y entrar al directorio:**
+```bash
+git clone https://github.com/Portafolio234/1.git
+cd 1
+npm install
+```
 
-   ```bash
-   git clone https://github.com/Portafolio234/1.git
-   cd 1
-   ```
+### Configurar entorno
 
-2. **Configurar el entorno:**
-   Crea un archivo `.env` en la raíz con las siguientes llaves (puedes solicitarlas en sus respectivos sitios):
+Crear `.env` en la raíz:
 
-   ```env
-   VITE_ROBOFLOW_API_KEY=tu_api_key_aqui
-   GROQ_API_KEY=tu_api_key_aqui
-   ```
+```env
+VITE_ROBOFLOW_API_KEY=tu_key
+GROQ_API_KEY=tu_key
+```
 
-3. **Instalar y correr:**
+### Desarrollo
 
-   ```bash
-   npm install
-   npm run dev
-   ```
+```bash
+npm run dev
+```
 
----
+### Build de producción
 
-## 🤝 Contribución
-
-Si quieres mejorar algo:
-
-1. Fork el proyecto.
-2. Crea una rama (`git checkout -b feature/MejoraIncreible`).
-3. Commit tus cambios (`git commit -m 'Añadida mejora funcional'`).
-4. Push a la rama (`git push origin feature/MejoraIncreible`).
-5. Abre un Pull Request.
+```bash
+npm run build
+npm run preview
+```
 
 ---
 
-## 📄 Licencia
+## Deploy
 
-Este proyecto está bajo la Licencia MIT. Siéntete libre de usarlo como inspiración.
+El proyecto se despliega automáticamente en **Vercel** al hacer push a la rama `main`. La configuración de rewrites en `vercel.json` redirige todas las rutas a `index.html` para soportar client-side routing.
+
+La serverless function en `api/chat.js` se despliega automáticamente como un endpoint `/api/chat`.
 
 ---
-*Desarrollado con ❤️ por Leonardo Nieto Cortés*
+
+## Licencia
+
+MIT — [Leonardo Nieto Cortés](https://github.com/Portafolio234)
