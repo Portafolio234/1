@@ -1,75 +1,71 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import * as pdfjsLib from 'pdfjs-dist';
 
-// Configuración del worker de PDF.js para Vite/Vercel
+// Configuración de worker para PDF.js
 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
 
+/**
+ * Hook de renderizado de PDF ultra-estable.
+ * Elimina bucles al no depender de useEffects internos para el dibujo.
+ */
 export const usePdfRenderer = (canvasRef) => {
-    const [pdfDoc, setPdfDoc] = useState(null);
+    const [bgImage, setBgImage] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
-    const bgImageRef = useRef(null);
+
     const renderTaskRef = useRef(null);
+    const inProgressRef = useRef(false);
 
-    const renderPage = async (pdf, pageNum) => {
-        if (renderTaskRef.current) {
-            renderTaskRef.current.cancel();
-        }
+    const loadPdf = useCallback(async (source) => {
+        if (!source || inProgressRef.current) return;
 
-        const page = await pdf.getPage(pageNum);
-        const viewport = page.getViewport({ scale: 1.5 });
-
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
-        setCanvasSize({ width: viewport.width, height: viewport.height });
-
-        const renderTask = page.render({ canvasContext: ctx, viewport });
-        renderTaskRef.current = renderTask;
+        inProgressRef.current = true;
+        setLoading(true);
+        setError(null);
+        setBgImage(null);
 
         try {
+            const loadingTask = pdfjsLib.getDocument(source);
+            const pdf = await loadingTask.promise;
+
+            const page = await pdf.getPage(1);
+            const viewport = page.getViewport({ scale: 1.2 });
+            const canvas = canvasRef.current;
+
+            if (!canvas) throw new Error("Canvas no montado");
+
+            const ctx = canvas.getContext('2d');
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+
+            if (renderTaskRef.current) {
+                renderTaskRef.current.cancel();
+            }
+
+            const renderTask = page.render({ canvasContext: ctx, viewport });
+            renderTaskRef.current = renderTask;
             await renderTask.promise;
 
+            // Almacenar el plano como imagen estática
             const img = new Image();
-            img.src = canvas.toDataURL('image/jpeg', 0.9);
+            img.src = canvas.toDataURL('image/jpeg', 0.8);
             await new Promise(resolve => {
                 img.onload = () => {
-                    bgImageRef.current = img;
+                    setBgImage(img);
                     resolve();
                 };
             });
+
         } catch (err) {
-            if (err.name === 'RenderingCancelledException') {
-                console.log('Renderizado cancelado para nueva página/plano.');
-            } else {
-                throw err;
+            if (err.name !== 'RenderingCancelledException') {
+                console.error("PDF Engine Fail:", err);
+                setError(err.message);
             }
         } finally {
-            renderTaskRef.current = null;
-        }
-    };
-
-    const loadPdf = async (source) => {
-        setLoading(true);
-        setError(null);
-        try {
-            const loadingTask = pdfjsLib.getDocument(source);
-            const loadedPdf = await loadingTask.promise;
-            setPdfDoc(loadedPdf);
-            await renderPage(loadedPdf, 1);
-            return loadedPdf;
-        } catch (err) {
-            console.error("Error cargando PDF:", err);
-            setError(`Error al procesar el PDF: ${err.message}`);
-            throw err;
-        } finally {
             setLoading(false);
+            inProgressRef.current = false;
         }
-    };
+    }, [canvasRef]);
 
-    return { pdfDoc, loading, error, canvasSize, bgImageRef, loadPdf, renderPage };
+    return { loadPdf, bgImage, loading, error };
 };

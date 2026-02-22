@@ -1,90 +1,49 @@
-import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useDropzone } from 'react-dropzone';
-import { FaCloudUploadAlt, FaSpinner, FaExpand, FaCompress, FaNetworkWired, FaEye } from 'react-icons/fa';
+import { FaCloudUploadAlt, FaSpinner, FaExpand, FaNetworkWired, FaEye, FaCompress } from 'react-icons/fa';
 import { usePdfRenderer } from '../hooks/usePdfRenderer';
 import { useRoboflow } from '../hooks/useRoboflow';
 import Step from './Step';
 import Arrow from './Arrow';
 
+const EXAMPLE_PDFS = [
+    { name: "Nivel 03-04 (Torre A)", url: "/pdfs/plano_1.pdf" },
+    { name: "Nivel 01-02 (Planta Baja)", url: "/pdfs/plano_2.pdf" },
+    { name: "Nivel Azotea (General)", url: "/pdfs/plano_3.pdf" }
+];
+
 const DoorDetectorDemo = ({ onClose }) => {
-    const [file, setFile] = useState(null);
     const [confidence, setConfidence] = useState(50);
     const [zones, setZones] = useState([]);
     const [showArchitecture, setShowArchitecture] = useState(false);
-    const [generalError, setGeneralError] = useState(null);
 
     const canvasRef = useRef(null);
-    const containerRef = useRef(null);
     const isDrawing = useRef(false);
     const startCoords = useRef({ x: 0, y: 0 });
+    const initialized = useRef(false);
 
-    const {
-        pdfDoc, loading, error: pdfError, bgImageRef, loadPdf
-    } = usePdfRenderer(canvasRef);
+    const { loadPdf, bgImage, loading, error } = usePdfRenderer(canvasRef);
     const { analyzeZone } = useRoboflow();
 
-    const EXAMPLE_PDFS = useMemo(() => [
-        { name: "Nivel 03-04 (Torre A)", url: "/pdfs/plano_1.pdf" },
-        { name: "Nivel 01-02 (Planta Baja)", url: "/pdfs/plano_2.pdf" },
-        { name: "Nivel Azotea (General)", url: "/pdfs/plano_3.pdf" }
-    ], []);
-
-    const loadPdfFromUrl = useCallback(async (url) => {
-        setGeneralError(null);
-        setFile(null);
-        setZones([]); // Limpiar zonas previas al cambiar de plano
-        try {
-            await loadPdf(url);
-        } catch (err) {
-            setGeneralError(`Error cargando el plano: ${err.message}`);
-        }
-    }, [loadPdf]);
-
+    // 1. CARGA INICIAL
     useEffect(() => {
-        loadPdfFromUrl(EXAMPLE_PDFS[0].url);
-    }, [loadPdfFromUrl, EXAMPLE_PDFS]);
-
-    const onDrop = useCallback(async (acceptedFiles) => {
-        const selectedFile = acceptedFiles[0];
-        setGeneralError(null);
-        if (selectedFile?.type === 'application/pdf') {
-            setFile(selectedFile);
-            try {
-                const arrayBuffer = await selectedFile.arrayBuffer();
-                await loadPdf(arrayBuffer);
-            } catch (err) {
-                setGeneralError(`Error al procesar el PDF: ${err.message}. Intenta con otro archivo.`);
-                setFile(null);
-            }
-        } else {
-            setGeneralError("Por favor sube un archivo PDF válido.");
+        if (!initialized.current) {
+            initialized.current = true;
+            loadPdf(EXAMPLE_PDFS[0].url);
         }
     }, [loadPdf]);
 
-    const { getRootProps, getInputProps, isDragActive } = useDropzone({
-        onDrop,
-        accept: { 'application/pdf': ['.pdf'] },
-        multiple: false
-    });
-
-    const getCoords = useCallback((e) => {
-        const rect = canvasRef.current.getBoundingClientRect();
-        return {
-            x: (e.clientX - rect.left) * (canvasRef.current.width / rect.width),
-            y: (e.clientY - rect.top) * (canvasRef.current.height / rect.height)
-        };
-    }, []);
-
-    const redrawCanvas = useCallback((currentZones = zones) => {
+    // 2. DIBUJO DIRECTO
+    const redraw = useCallback(() => {
         const canvas = canvasRef.current;
-        if (!canvas || !bgImageRef.current) return;
+        if (!canvas || !bgImage) return;
         const ctx = canvas.getContext('2d');
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(bgImageRef.current, 0, 0);
+        ctx.drawImage(bgImage, 0, 0);
 
-        currentZones.forEach(zone => {
+        zones.forEach(zone => {
             ctx.strokeStyle = zone.processing ? '#6366f1' : '#10b981';
             ctx.lineWidth = 4;
             ctx.setLineDash(zone.processing ? [5, 5] : []);
@@ -99,252 +58,137 @@ const DoorDetectorDemo = ({ onClose }) => {
                 });
             }
         });
-    }, [zones, bgImageRef]);
+    }, [bgImage, zones]);
 
     useEffect(() => {
-        if (bgImageRef.current) redrawCanvas();
-    }, [redrawCanvas, bgImageRef]);
+        redraw();
+    }, [redraw]);
 
-    const processZone = useCallback(async (zone) => {
+    // 3. IA
+    const handleProcess = useCallback(async (zone) => {
+        if (!bgImage) return;
         const offCanvas = document.createElement('canvas');
-        offCanvas.width = zone.w;
-        offCanvas.height = zone.h;
+        offCanvas.width = zone.w; offCanvas.height = zone.h;
         const offCtx = offCanvas.getContext('2d');
-        offCtx.drawImage(bgImageRef.current, zone.x, zone.y, zone.w, zone.h, 0, 0, zone.w, zone.h);
+        offCtx.drawImage(bgImage, zone.x, zone.y, zone.w, zone.h, 0, 0, zone.w, zone.h);
 
-        const base64Image = offCanvas.toDataURL('image/jpeg', 0.8).split(',')[1];
-
+        const base64 = offCanvas.toDataURL('image/jpeg', 0.8).split(',')[1];
         try {
-            const preds = await analyzeZone(base64Image);
-
-            setZones(prev => prev.map(z => {
-                if (z.id !== zone.id) return z;
-
-                const validDetections = preds.filter(p => p.confidence >= confidence / 100).map(p => ({
-                    x: p.x - p.width / 2,
-                    y: p.y - p.height / 2,
-                    width: p.width,
-                    height: p.height,
-                    class: p.class,
-                    confidence: p.confidence
-                }));
-
-                return {
-                    ...z,
-                    processing: false,
-                    count: validDetections.length,
-                    detections: validDetections,
-                    rawPredictions: preds
-                };
+            const preds = await analyzeZone(base64);
+            const valid = preds.filter(p => p.confidence >= confidence / 100).map(p => ({
+                x: p.x - p.width / 2, y: p.y - p.height / 2, width: p.width, height: p.height
             }));
-        } catch (error) {
-            setZones(prev => prev.map(z =>
-                z.id === zone.id ? { ...z, processing: false, count: "Error" } : z
-            ));
+            setZones(prev => prev.map(z => z.id === zone.id ? { ...z, processing: false, count: valid.length, detections: valid } : z));
+        } catch (e) {
+            setZones(prev => prev.map(z => z.id === zone.id ? { ...z, processing: false, count: "!" } : z));
         }
-    }, [analyzeZone, confidence, bgImageRef]);
+    }, [bgImage, analyzeZone, confidence]);
 
-    const handleMouseDown = useCallback((e) => {
-        if (!bgImageRef.current || showArchitecture) return;
+    // 4. MOUSE
+    const getCoords = (e) => {
+        const rect = canvasRef.current.getBoundingClientRect();
+        return {
+            x: (e.clientX - rect.left) * (canvasRef.current.width / rect.width),
+            y: (e.clientY - rect.top) * (canvasRef.current.height / rect.height)
+        };
+    };
+
+    const onMouseDown = (e) => {
+        if (!bgImage || showArchitecture) return;
         isDrawing.current = true;
         startCoords.current = getCoords(e);
-    }, [bgImageRef, getCoords, showArchitecture]);
+    };
 
-    const handleMouseMove = useCallback((e) => {
-        if (!isDrawing.current || !bgImageRef.current) return;
+    const onMouseMove = (e) => {
+        if (!isDrawing.current || !bgImage) return;
+        const current = getCoords(e);
+        redraw();
         const ctx = canvasRef.current.getContext('2d');
-        const currentCoords = getCoords(e);
+        ctx.strokeStyle = '#6366f1'; ctx.setLineDash([8, 4]);
+        ctx.strokeRect(startCoords.current.x, startCoords.current.y, current.x - startCoords.current.x, current.y - startCoords.current.y);
+    };
 
-        redrawCanvas();
-
-        ctx.strokeStyle = '#6366f1';
-        ctx.lineWidth = 3;
-        ctx.setLineDash([8, 4]);
-        ctx.strokeRect(
-            startCoords.current.x,
-            startCoords.current.y,
-            currentCoords.x - startCoords.current.x,
-            currentCoords.y - startCoords.current.y
-        );
-    }, [getCoords, redrawCanvas, bgImageRef]);
-
-    const handleMouseUp = useCallback(async (e) => {
-        if (!isDrawing.current || !bgImageRef.current) return;
+    const onMouseUp = (e) => {
+        if (!isDrawing.current) return;
         isDrawing.current = false;
+        const end = getCoords(e);
+        const w = Math.abs(end.x - startCoords.current.x);
+        const h = Math.abs(end.y - startCoords.current.y);
+        if (w > 20 && h > 20) {
+            const zone = { id: Date.now(), x: Math.min(startCoords.current.x, end.x), y: Math.min(startCoords.current.y, end.y), w, h, processing: true };
+            setZones(prev => [...prev, zone]);
+            handleProcess(zone);
+        } else redraw();
+    };
 
-        const endCoords = getCoords(e);
-        const width = Math.abs(endCoords.x - startCoords.current.x);
-        const height = Math.abs(endCoords.y - startCoords.current.y);
+    const onDrop = useCallback((files) => {
+        if (files[0]) { setZones([]); loadPdf(files[0]); }
+    }, [loadPdf]);
 
-        if (width > 20 && height > 20) {
-            const newZone = {
-                id: Date.now(),
-                x: Math.min(startCoords.current.x, endCoords.x),
-                y: Math.min(startCoords.current.y, endCoords.y),
-                w: width,
-                h: height,
-                processing: true,
-                detections: [],
-                count: '...'
-            };
-
-            setZones(prev => [...prev, newZone]);
-            await processZone(newZone);
-        } else {
-            redrawCanvas();
-        }
-    }, [getCoords, redrawCanvas, processZone, bgImageRef]);
-
-    useEffect(() => {
-        setZones(prevZones => prevZones.map(zone => {
-            if (!zone.rawPredictions) return zone;
-            const validDetections = zone.rawPredictions
-                .filter(p => p.confidence >= confidence / 100)
-                .map(p => ({
-                    x: p.x - p.width / 2,
-                    y: p.y - p.height / 2,
-                    width: p.width,
-                    height: p.height,
-                    class: p.class,
-                    confidence: p.confidence
-                }));
-            return { ...zone, detections: validDetections, count: validDetections.length };
-        }));
-    }, [confidence]);
-
-    useEffect(() => {
-        document.body.style.overflow = 'hidden';
-        return () => { document.body.style.overflow = 'auto'; };
-    }, []);
+    const { getRootProps, getInputProps } = useDropzone({ onDrop, accept: { 'application/pdf': ['.pdf'] } });
 
     return createPortal(
-        <div className="fixed inset-0 z-[9999] bg-[#0f172a] flex flex-col md:flex-row text-white overflow-hidden">
-            {/* Sidebar / Controls */}
-            <div className="w-full md:w-80 bg-[#1e293b] p-4 md:p-6 flex flex-col gap-4 shadow-xl z-20 shrink-0 h-[40vh] md:h-full overflow-hidden border-b md:border-b-0 md:border-r border-gray-700">
-                <div className="flex justify-between items-center shrink-0">
-                    <h2 className="text-lg md:text-xl font-bold font-heading text-accent-primary flex items-center gap-2">
-                        <i className="fas fa-door-open"></i> DETECTOR
-                    </h2>
-                    <button onClick={onClose} className="flex items-center gap-2 px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 border border-red-500/20 rounded-lg transition-all text-[10px] font-bold tracking-wider uppercase">
-                        <FaCompress /> VOLVER
-                    </button>
+        <div className="fixed inset-0 z-[1000] bg-[#0f172a] text-white flex flex-col md:flex-row overflow-hidden">
+            <aside className="w-full md:w-80 bg-[#1e293b] border-r border-gray-700 flex flex-col p-6 shadow-2xl shrink-0 overflow-y-auto">
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-xl font-bold text-accent-primary">DETECTOR</h2>
+                    <button onClick={onClose} className="p-2 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20"><FaCompress /></button>
                 </div>
-
-                <div className="flex-1 overflow-y-auto pr-2 space-y-4 md:space-y-6 custom-scrollbar">
-
-                    <button
-                        onClick={() => setShowArchitecture(!showArchitecture)}
-                        className="w-full flex items-center justify-center gap-2 py-2 bg-accent-primary/10 border border-accent-primary/20 rounded-lg text-accent-primary text-[10px] font-bold uppercase tracking-wider hover:bg-accent-primary/20 transition-all"
-                    >
-                        <FaNetworkWired /> {showArchitecture ? "Volver al Plano" : "Ver Arquitectura"}
-                    </button>
-
-                    <div className="bg-[#334155]/50 p-3 rounded-lg border border-gray-700">
-                        <h3 className="text-[9px] md:text-[10px] font-bold text-gray-400 mb-2 uppercase tracking-wider">Planos de Ejemplo</h3>
-                        <div className="grid grid-cols-1 gap-1">
-                            {EXAMPLE_PDFS.map((pdf, idx) => (
-                                <button
-                                    key={idx}
-                                    onClick={() => loadPdfFromUrl(pdf.url)}
-                                    className="text-left text-[11px] p-2 rounded hover:bg-[#0f172a] transition-all flex items-center gap-2 truncate border border-transparent hover:border-accent-primary/30 group"
-                                >
-                                    <span className="text-accent-primary opacity-70 group-hover:opacity-100">📄</span>
-                                    <span className="text-gray-300 group-hover:text-white truncate">{pdf.name}</span>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div {...getRootProps()} className={`border-2 border-dashed rounded-xl p-4 md:p-6 text-center cursor-pointer transition-all ${isDragActive ? 'border-accent-primary bg-accent-primary/10' : 'border-gray-600 hover:border-accent-primary hover:bg-[#334155]/30'}`}>
-                        <input {...getInputProps()} />
-                        <FaCloudUploadAlt className="text-xl md:text-2xl mx-auto mb-2 text-gray-400" />
-                        <p className="text-[10px] md:text-xs text-gray-400">Clic o arrastra PDF aquí</p>
-                    </div>
-
-                    <div className="bg-[#334155]/50 p-4 rounded-lg border border-gray-700">
-                        <label className="flex justify-between text-[10px] font-bold text-gray-400 mb-2 tracking-wider">
-                            IA SENSIBILIDAD: <span className="text-accent-primary">{confidence}%</span>
-                        </label>
-                        <input
-                            type="range" min="10" max="95" value={confidence}
-                            onChange={(e) => setConfidence(e.target.value)}
-                            className="w-full accent-accent-primary h-1.5 bg-gray-700 rounded-lg appearance-none cursor-pointer"
-                        />
-                    </div>
-
+                <div className="space-y-6">
+                    <button onClick={() => setShowArchitecture(!showArchitecture)} className="w-full py-3 bg-accent-primary/10 border border-accent-primary/20 rounded-xl text-accent-primary font-bold text-xs uppercase hover:bg-accent-primary/20"><FaNetworkWired className="inline mr-2" /> ARQUITECTURA</button>
                     <div>
-                        <h3 className="text-[10px] font-bold text-gray-400 mb-2 uppercase tracking-wider flex justify-between items-center">
-                            Detecciones <span className="text-[10px] bg-gray-700 px-2 py-0.5 rounded-full">{zones.length}</span>
-                        </h3>
-                        <div className="grid grid-cols-2 md:grid-cols-1 gap-2 pb-4">
-                            {zones.map((zone, idx) => (
-                                <div key={zone.id} className="bg-[#0f172a] p-2 rounded border border-gray-700 flex justify-between items-center text-[10px] md:text-xs">
-                                    <span className="font-mono text-gray-300 truncate mr-1">Z#{idx + 1}</span>
-                                    <span className={`px-2 py-0.5 rounded-full font-bold min-w-[30px] text-center ${zone.processing ? 'bg-indigo-500/20 text-indigo-300 animate-pulse' : 'bg-emerald-500/20 text-emerald-300'}`}>
-                                        {zone.count}
-                                    </span>
-                                </div>
+                        <p className="text-[10px] font-bold text-gray-500 uppercase mb-2">Ejemplos</p>
+                        <div className="grid gap-2">
+                            {EXAMPLE_PDFS.map(p => (
+                                <button key={p.url} onClick={() => { setZones([]); loadPdf(p.url); }} className="text-left text-xs p-3 rounded-lg bg-[#0f172a]/50 border border-white/5 hover:border-accent-primary/30 truncate">📄 {p.name}</button>
                             ))}
                         </div>
                     </div>
+                    <div {...getRootProps()} className="p-4 border-2 border-dashed border-gray-600 rounded-xl text-center cursor-pointer hover:border-accent-primary">
+                        <input {...getInputProps()} />
+                        <FaCloudUploadAlt className="text-2xl mx-auto mb-1 text-gray-500" />
+                        <p className="text-[10px] text-gray-500">Subir PDF</p>
+                    </div>
+                    <div className="bg-black/20 p-4 rounded-xl">
+                        <p className="text-[10px] font-bold text-gray-500 mb-2">SENSIBILIDAD: {confidence}%</p>
+                        <input type="range" min="10" max="95" value={confidence} onChange={(e) => setConfidence(e.target.value)} className="w-full" />
+                    </div>
+                    <div className="space-y-2">
+                        <p className="text-[10px] font-bold text-gray-500 uppercase">Zonas ({zones.length})</p>
+                        {zones.map((z, idx) => (
+                            <div key={z.id} className="flex justify-between items-center p-2 bg-black/20 rounded-lg border border-white/5">
+                                <span className="text-[10px] text-gray-400">Zona #{idx + 1}</span>
+                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${z.processing ? 'bg-indigo-500/20 animate-pulse' : 'bg-emerald-500/20 text-emerald-300'}`}>{z.count ?? '...'}</span>
+                            </div>
+                        ))}
+                    </div>
                 </div>
-            </div>
-
-            {/* Main Area */}
-            <div ref={containerRef} className="flex-1 bg-[#0f172a] relative overflow-auto flex justify-center items-start md:items-center p-4 md:p-8">
+            </aside>
+            <main className="flex-1 bg-[#060810] relative flex items-center justify-center p-4 overflow-auto">
                 {showArchitecture ? (
-                    <div className="w-full max-w-4xl animate-fadeIn py-10">
-                        <div className="text-center mb-12">
-                            <h3 className="text-accent-primary font-heading font-bold uppercase tracking-widest text-sm mb-2">Arquitectura del Detector</h3>
-                            <p className="text-text-secondary text-xs">Flujo de procesamiento de visión artificial en planos PDF.</p>
-                        </div>
-                        <div className="flex flex-col md:flex-row items-center gap-6 bg-[#1e293b]/30 p-8 rounded-2xl border border-white/5 shadow-2xl">
-                            <Step icon="fa-file-pdf" title="PDF Vector" desc="Conversión de plano curvo a imagen de alta resolución." />
+                    <div className="text-center animate-fadeIn py-10">
+                        <h3 className="text-accent-primary font-bold mb-8 uppercase tracking-[0.3em]">Arquitectura</h3>
+                        <div className="flex flex-col md:flex-row items-center gap-6 justify-center">
+                            <Step icon="fa-file-pdf" title="PDF Engine" desc="Carga Estable" />
                             <Arrow />
-                            <Step icon="fa-crop-alt" title="Sliding Window" desc="Segmentación de zonas críticas para análisis." />
-                            <Arrow />
-                            <Step icon="fa-microchip" title="Roboflow Inference" desc="Detección de objetos mediante modelo YOLOv8." />
+                            <Step icon="fa-microchip" title="IA" desc="YOLOv10 Analysis" />
                         </div>
-                        <div className="mt-12 text-center">
-                            <button
-                                onClick={() => setShowArchitecture(false)}
-                                className="px-6 py-2 bg-accent-primary text-bg-dark font-bold rounded-lg text-xs uppercase hover:scale-105 transition-all"
-                            >
-                                <FaEye className="inline mr-2" /> Probar Demo
-                            </button>
-                        </div>
+                        <button onClick={() => setShowArchitecture(false)} className="mt-12 px-8 py-3 bg-accent-primary text-bg-dark font-black rounded-xl text-xs uppercase hover:scale-105 transition-all">VOLVER AL PLANO</button>
                     </div>
                 ) : (
-                    <>
+                    <div className="relative">
                         {loading && (
-                            <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-30">
-                                <div className="flex flex-col items-center">
-                                    <FaSpinner className="text-4xl text-accent-primary animate-spin mb-4" />
-                                    <p className="text-sm font-medium">Procesando Plano...</p>
-                                </div>
+                            <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 rounded-xl">
+                                <FaSpinner className="text-3xl text-accent-primary animate-spin" />
                             </div>
                         )}
-                        {!pdfDoc ? (
-                            <div className="flex flex-col items-center justify-center h-full w-full text-gray-500 opacity-50 px-4 text-center">
-                                <FaExpand className="text-4xl md:text-6xl mb-4" />
-                                <p className="text-lg md:text-xl">Selecciona un plano para comenzar</p>
-                                {(generalError || pdfError) && <p className="text-red-500 mt-4 text-sm font-bold">{generalError || pdfError}</p>}
-                            </div>
-                        ) : (
-                            <div className="relative inline-block touch-none select-none">
-                                <canvas
-                                    ref={canvasRef}
-                                    onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}
-                                    className="shadow-2xl rounded-lg cursor-crosshair bg-white max-w-none origin-top-left"
-                                    style={{
-                                        touchAction: 'none'
-                                    }}
-                                />
-                            </div>
-                        )}
-                    </>
+                        {error && <div className="p-6 bg-red-500/10 text-red-500 rounded-xl text-xs">{error}</div>}
+                        <canvas ref={canvasRef} onMouseDown={onMouseDown} onMouseMove={onMouseMove} onMouseUp={onMouseUp} onMouseLeave={onMouseUp}
+                            className={`shadow-2xl rounded-xl bg-white cursor-crosshair transition-opacity ${bgImage ? 'opacity-100' : 'opacity-0'}`} style={{ touchAction: 'none' }} />
+                        {!bgImage && !loading && !error && <div className="opacity-20 text-center"><FaExpand className="text-5xl mb-2 mx-auto" /><p>SELECCIONE UN PLANO</p></div>}
+                    </div>
                 )}
-            </div>
+            </main>
         </div>,
         document.body
     );
