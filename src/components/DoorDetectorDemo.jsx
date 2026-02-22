@@ -33,10 +33,11 @@ const DoorDetectorDemo = ({ onClose }) => {
     const loadPdfFromUrl = useCallback(async (url) => {
         setGeneralError(null);
         setFile(null);
+        setZones([]); // Limpiar zonas previas al cambiar de plano
         try {
             await loadPdf(url);
         } catch (err) {
-            setGeneralError(`Error cargando el plano de ejemplo: ${err.message}`);
+            setGeneralError(`Error cargando el plano: ${err.message}`);
         }
     }, [loadPdf]);
 

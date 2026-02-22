@@ -64,11 +64,11 @@ const ProjectCard = ({ title, tech, desc, image, demoLink, link, github, onRunDe
                 <div className="flex flex-wrap gap-2.5 mt-auto">
                     {onRunDemo ? (
                         <button onClick={onRunDemo} className="flex-1 min-w-[120px] bg-gradient-to-r from-accent-primary to-accent-secondary text-bg-dark py-2 px-4 rounded font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(0,243,255,0.4)]">
-                            Probar Demo <i className="fas fa-play text-[10px]"></i>
+                            Probar Demo <i className="fa-solid fa-play text-[10px]"></i>
                         </button>
                     ) : (demoLink || link) && (
                         <a href={demoLink || link} target="_blank" rel="noopener noreferrer" className="flex-1 min-w-[120px] bg-gradient-to-r from-accent-primary to-accent-secondary text-bg-dark py-2 px-4 rounded font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(0,243,255,0.4)]">
-                            Ver App <i className="fas fa-external-link-alt text-[10px]"></i>
+                            Ver App <i className="fa-solid fa-external-link-alt text-[10px]"></i>
                         </a>
                     )}
 
@@ -76,7 +76,7 @@ const ProjectCard = ({ title, tech, desc, image, demoLink, link, github, onRunDe
                         className="flex-1 min-w-[120px] bg-transparent border border-accent-primary/30 text-accent-primary hover:bg-accent-primary/10 py-2 px-4 rounded font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2"
                         onClick={onViewCase}
                     >
-                        Arquitectura <i className="fas fa-network-wired text-[10px]"></i>
+                        Arquitectura <i className="fa-solid fa-network-wired text-[10px]"></i>
                     </button>
                 </div>
             </div>

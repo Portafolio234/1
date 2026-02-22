@@ -27,9 +27,12 @@ const EnterpriseRAG = ({ onClose }) => {
 
     const handleSend = useCallback(async (e) => {
         e.preventDefault();
-        if (!input.trim()) return;
+        const trimInput = input.trim();
+        if (!trimInput) return;
 
-        const userMsg = { role: 'user', content: input };
+        const userMsg = { role: 'user', content: trimInput };
+        console.log("Enterprise RAG - Enviando mensaje:", userMsg);
+
         setMessages(prev => [...prev, userMsg]);
         setInput('');
         setLoading(true);
@@ -47,16 +50,16 @@ const EnterpriseRAG = ({ onClose }) => {
             };
             setMessages(prev => [...prev, aiMsg]);
             setLoading(false);
-        }, 1200);
+        }, 1000);
     }, [input]);
 
     const ArchitectureView = useMemo(() => (
-        <div className="flex-1 flex flex-col items-center justify-center space-y-12 animate-fadeIn p-4 overflow-y-auto bg-[#0b0f19]">
-            <div className="text-center mb-4">
-                <h3 className="text-accent-primary font-heading font-bold uppercase tracking-widest text-sm mb-2">Flujo de Recuperación Aumentada (RAG)</h3>
-                <p className="text-text-secondary text-xs">Procesamiento seguro de documentos con LLMs privados.</p>
+        <div className="flex-1 flex flex-col items-center justify-start lg:justify-center lg:space-y-12 animate-fadeIn p-4 md:p-8 overflow-y-auto bg-[#0b0f19] custom-scrollbar">
+            <div className="text-center mb-8 mt-4">
+                <h3 className="text-accent-primary font-heading font-bold uppercase tracking-widest text-xs md:text-sm mb-2">Flujo de Recuperación Aumentada (RAG)</h3>
+                <p className="text-text-secondary text-[10px] md:text-xs">Procesamiento seguro de documentos con LLMs privados.</p>
             </div>
-            <div className="flex flex-col md:flex-row items-center gap-6 bg-[#1e293b]/30 p-8 rounded-2xl border border-white/5 w-full max-w-5xl shadow-2xl">
+            <div className="flex flex-col md:flex-row items-center gap-6 bg-[#1e293b]/30 p-6 md:p-10 rounded-2xl border border-white/5 w-full max-w-5xl shadow-2xl mb-8">
                 <Step icon="fa-file-alt" title="Document Parsing" desc="Extracción y limpieza de texto de PDFs y Docs." />
                 <Arrow />
                 <Step icon="fa-project-diagram" title="Vector Indexing" desc="Fragmentación y almacenamiento en base vectorial." />
@@ -67,12 +70,12 @@ const EnterpriseRAG = ({ onClose }) => {
             </div>
             <button
                 onClick={() => setShowArchitecture(false)}
-                className="px-8 py-3 bg-accent-primary text-bg-dark font-bold rounded-lg text-xs uppercase hover:scale-105 transition-all shadow-lg"
+                className="px-8 py-3 bg-accent-primary text-bg-dark font-bold rounded-lg text-xs uppercase hover:scale-105 transition-all shadow-lg mb-8 shrink-0"
             >
                 Volver al Chat
             </button>
         </div>
-    ), []);
+    ), [setShowArchitecture]);
 
     return createPortal(
         <div className="fixed inset-0 z-[9999] bg-[#0f172a] flex flex-col text-white overflow-hidden">

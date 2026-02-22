@@ -67,28 +67,43 @@ const FinancialForecaster = ({ onClose }) => {
 
     const handleSend = useCallback(async (e) => {
         e.preventDefault();
-        if (!input.trim()) return;
+        const trimInput = input.trim();
+        if (!trimInput || chatLoading) return;
 
-        const userMsg = { role: 'user', content: input };
+        const userMsg = { role: 'user', content: trimInput };
         setMessages(prev => [...prev, userMsg]);
         setInput('');
         setChatLoading(true);
 
-        const aiResponses = [
-            `Analizando el gráfico de ${ticker}... Veo una tendencia alcista soportada por el volumen actual.`,
-            `El RSI de ${ticker} sugiere una zona de sobreventa, lo que podría indicar un rebote inminente.`,
-            `Basado en los patrones OHLC observados, ${ticker} enfrenta una resistencia clave en los niveles superiores.`
-        ];
+        try {
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    messages: [
+                        { role: 'system', content: `Eres un experto analista financiero. Estás analizando el activo ${ticker}. Responde de forma profesional, técnica y basada en el contexto del mercado actual.` },
+                        ...messages,
+                        userMsg
+                    ]
+                })
+            });
 
-        setTimeout(() => {
-            const aiMsg = {
+            if (!response.ok) throw new Error('Error al conectar con el motor de IA');
+
+            const data = await response.json();
+            const aiContent = data.choices[0].message.content;
+
+            setMessages(prev => [...prev, { role: 'assistant', content: aiContent }]);
+        } catch (error) {
+            console.error("Financial Chat Error:", error);
+            setMessages(prev => [...prev, {
                 role: 'assistant',
-                content: aiResponses[Math.floor(Math.random() * aiResponses.length)]
-            };
-            setMessages(prev => [...prev, aiMsg]);
+                content: "Lo siento, tuve un problema al procesar tu análisis financiero. ¿Podemos intentarlo de nuevo?"
+            }]);
+        } finally {
             setChatLoading(false);
-        }, 1200);
-    }, [input, ticker]);
+        }
+    }, [input, ticker, messages, chatLoading]);
 
     const plotLayout = useMemo(() => ({
         dragmode: 'zoom',
