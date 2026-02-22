@@ -6,6 +6,7 @@ import Arrow from './Arrow';
 
 const FinancialForecaster = ({ onClose }) => {
     const [ticker, setTicker] = useState('BTC-USD');
+    const [timeRange, setTimeRange] = useState('1M'); // Default a 1 mes
     const [chartData, setChartData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [messages, setMessages] = useState([]);
@@ -22,21 +23,51 @@ const FinancialForecaster = ({ onClose }) => {
         scrollToBottom();
     }, [messages, scrollToBottom]);
 
-    // Generador de datos robusto para evitar problemas de CORS y APIs caídas
-    const generateMockData = useCallback((symbol) => {
-        const count = 24;
+    // Generador de datos robusto con soporte para múltiples líneas de tiempo
+    const generateMockData = useCallback((symbol, range) => {
+        let count, interval; // Milisegundos entre puntos
+
+        switch (range) {
+            case '1D':
+                count = 24;
+                interval = 3600000; // 1 hora
+                break;
+            case '1W':
+                count = 7;
+                interval = 86400000; // 1 día
+                break;
+            case '1M':
+                count = 30;
+                interval = 86400000; // 1 día
+                break;
+            case '1Y':
+                count = 365;
+                interval = 86400000; // 1 día
+                break;
+            case 'ALL':
+                count = 1000;
+                interval = 86400000 * 3; // 3 días
+                break;
+            default:
+                count = 30;
+                interval = 86400000;
+        }
+
         const now = new Date();
-        const timestamps = Array.from({ length: count }, (_, i) => new Date(now.getTime() - (count - i) * 3600000));
+        const timestamps = Array.from({ length: count }, (_, i) => new Date(now.getTime() - (count - i) * interval));
 
         let lastPrice = symbol.includes('BTC') ? 50000 : 150;
         const open = [], high = [], low = [], close = [];
 
+        // Volatilidad ajustada según el rango
+        const vol = range === '1D' ? 0.02 : 0.05;
+
         for (let i = 0; i < count; i++) {
-            const change = (Math.random() - 0.5) * (lastPrice * 0.02);
+            const change = (Math.random() - 0.5) * (lastPrice * vol);
             const o = lastPrice;
             const c = lastPrice + change;
-            const h = Math.max(o, c) + Math.random() * (lastPrice * 0.005);
-            const l = Math.min(o, c) - Math.random() * (lastPrice * 0.005);
+            const h = Math.max(o, c) + Math.random() * (lastPrice * (vol / 4));
+            const l = Math.min(o, c) - Math.random() * (lastPrice * (vol / 4));
 
             open.push(o);
             close.push(c);
@@ -51,19 +82,19 @@ const FinancialForecaster = ({ onClose }) => {
             type: 'candlestick',
             xaxis: 'x',
             yaxis: 'y',
-            increasing: { line: { color: '#00f3ff' } },
-            decreasing: { line: { color: '#ff4d4d' } }
+            increasing: { line: { color: '#00f3ff', width: 1 } },
+            decreasing: { line: { color: '#ff4d4d', width: 1 } }
         }];
     }, []);
 
     useEffect(() => {
         setLoading(true);
         const timer = setTimeout(() => {
-            setChartData(generateMockData(ticker));
+            setChartData(generateMockData(ticker, timeRange));
             setLoading(false);
         }, 800);
         return () => clearTimeout(timer);
-    }, [ticker, generateMockData]);
+    }, [ticker, timeRange, generateMockData]);
 
     const handleSend = useCallback(async (e) => {
         e.preventDefault();
@@ -81,7 +112,7 @@ const FinancialForecaster = ({ onClose }) => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     messages: [
-                        { role: 'system', content: `Eres un experto analista financiero. Estás analizando el activo ${ticker}. Responde de forma profesional, técnica y basada en el contexto del mercado actual.` },
+                        { role: 'system', content: `Eres un experto analista financiero. Estás analizando el activo ${ticker} en un rango de ${timeRange}. Responde de forma profesional, técnica y basada en el contexto del mercado actual.` },
                         ...messages,
                         userMsg
                     ]
@@ -103,7 +134,7 @@ const FinancialForecaster = ({ onClose }) => {
         } finally {
             setChatLoading(false);
         }
-    }, [input, ticker, messages, chatLoading]);
+    }, [input, ticker, timeRange, messages, chatLoading]);
 
     const plotLayout = useMemo(() => ({
         dragmode: 'zoom',
@@ -111,12 +142,14 @@ const FinancialForecaster = ({ onClose }) => {
         xaxis: {
             rangeslider: { visible: false },
             gridcolor: '#334155',
-            tickfont: { color: '#94a3b8', size: 10 }
+            tickfont: { color: '#94a3b8', size: 10 },
+            type: 'date'
         },
         yaxis: {
             gridcolor: '#334155',
             tickfont: { color: '#94a3b8', size: 10 },
-            side: 'right'
+            side: 'right',
+            autorange: true
         },
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
@@ -127,17 +160,28 @@ const FinancialForecaster = ({ onClose }) => {
     return createPortal(
         <div className="fixed inset-0 z-[9999] bg-[#0f172a] flex flex-col text-white overflow-hidden">
             {/* Top Navigation */}
-            <div className="bg-[#1e293b] p-4 flex justify-between items-center border-b border-gray-700 shrink-0">
+            <div className="bg-[#1e293b] p-4 flex justify-between items-center border-b border-gray-700 shrink-0 shadow-lg">
                 <div className="flex items-center gap-4">
                     <h2 className="text-lg md:text-xl font-bold font-heading text-[#00f3ff] flex items-center gap-2">
-                        <i className="fas fa-chart-line"></i> FINANCE AI
+                        <i className="fa-solid fa-chart-line"></i> FINANCE AI
                     </h2>
                     <button
                         onClick={() => setShowArchitecture(!showArchitecture)}
                         className="hidden md:flex items-center gap-2 px-3 py-1 bg-[#1e293b] hover:bg-accent-primary/10 text-gray-400 hover:text-accent-primary border border-gray-700 rounded-lg transition-all text-[10px] font-bold tracking-wider uppercase"
                     >
-                        <i className="fas fa-network-wired"></i> {showArchitecture ? "Gráfico" : "Arquitectura"}
+                        <i className="fa-solid fa-network-wired"></i> {showArchitecture ? "Gráfico" : "Arquitectura"}
                     </button>
+                    <div className="hidden sm:flex bg-black/40 rounded-lg p-0.5 border border-white/5 ml-2">
+                        {['1D', '1W', '1M', '1Y', 'ALL'].map(r => (
+                            <button
+                                key={r}
+                                onClick={() => setTimeRange(r)}
+                                className={`px-3 py-1 rounded-md text-[9px] font-black transition-all ${timeRange === r ? 'bg-[#00f3ff] text-black shadow-[0_0_10px_rgba(0,243,255,0.4)]' : 'text-gray-500 hover:text-white'}`}
+                            >
+                                {r}
+                            </button>
+                        ))}
+                    </div>
                 </div>
                 <button onClick={onClose} className="flex items-center gap-2 px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 border border-red-500/20 rounded-lg transition-all text-[10px] font-bold tracking-wider uppercase">
                     <i className="fas fa-arrow-left"></i> VOLVER
@@ -173,6 +217,19 @@ const FinancialForecaster = ({ onClose }) => {
                                 ))}
                             </div>
 
+                            {/* Mobile Time Range Selector */}
+                            <div className="flex sm:hidden gap-1 mb-4 px-2 overflow-x-auto pb-1 custom-scrollbar">
+                                {['1D', '1W', '1M', '1Y', 'ALL'].map(r => (
+                                    <button
+                                        key={r}
+                                        onClick={() => setTimeRange(r)}
+                                        className={`px-3 py-1.5 rounded-lg text-[9px] font-black transition-all border ${timeRange === r ? 'bg-[#00f3ff] border-[#00f3ff] text-black' : 'bg-gray-800/40 border-white/5 text-gray-500'}`}
+                                    >
+                                        {r}
+                                    </button>
+                                ))}
+                            </div>
+
                             <div className="flex-1 bg-[#1e293b]/50 rounded-xl border border-gray-700 overflow-hidden relative">
                                 {loading && (
                                     <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#0f172a]/80 backdrop-blur-sm">
@@ -199,7 +256,7 @@ const FinancialForecaster = ({ onClose }) => {
                 <div className="w-full lg:w-[450px] bg-[#111827] flex flex-col overflow-hidden h-[40vh] lg:h-full shrink-0">
                     <div className="p-4 bg-[#1e293b] border-b border-gray-700 shrink-0 flex justify-between items-center">
                         <h3 className="text-[10px] font-bold text-[#00f3ff] uppercase tracking-widest flex items-center gap-2">
-                            <i className="fas fa-robot"></i> Analista Conversacional
+                            <i className="fa-solid fa-robot"></i> Analista Conversacional
                         </h3>
                         <button
                             onClick={() => setShowArchitecture(!showArchitecture)}
@@ -212,7 +269,7 @@ const FinancialForecaster = ({ onClose }) => {
                     <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
                         {messages.length === 0 && (
                             <div className="h-full flex flex-col items-center justify-center text-gray-500 text-center px-6">
-                                <i className="fas fa-comment-dots text-4xl mb-4 opacity-20"></i>
+                                <i className="fa-solid fa-comment-dots text-4xl mb-4 opacity-20"></i>
                                 <p className="text-[11px] md:text-sm">Pregunta sobre el gráfico de <span className="text-[#00f3ff] font-bold">{ticker}</span>.</p>
                             </div>
                         )}
@@ -248,7 +305,7 @@ const FinancialForecaster = ({ onClose }) => {
                                 disabled={chatLoading}
                                 className="bg-[#00f3ff] hover:bg-[#00d8e6] text-[#000814] w-10 h-10 rounded-lg flex items-center justify-center transition-all disabled:opacity-50"
                             >
-                                <i className="fas fa-paper-plane"></i>
+                                <i className="fa-solid fa-paper-plane"></i>
                             </button>
                         </div>
                     </form>
