@@ -76,7 +76,7 @@ const DoorDetectorDemo = ({ onClose }) => {
 
         zones.forEach(zone => {
             ctx.strokeStyle = zone.processing ? '#6366f1' : '#10b981';
-            ctx.lineWidth = 3; // Grosor fijo en coords del canvas (independiente del zoom CSS)
+            ctx.lineWidth = 3;
             ctx.setLineDash(zone.processing ? [8, 4] : []);
             ctx.strokeRect(zone.x, zone.y, zone.w, zone.h);
 
@@ -85,10 +85,8 @@ const DoorDetectorDemo = ({ onClose }) => {
                     ctx.strokeStyle = '#f59e0b';
                     ctx.lineWidth = 2;
                     ctx.setLineDash([]);
-                    // Roboflow devuelve x,y como CENTRO del bbox -> convertir a esquina sup-izq
-                    const bx = zone.x + (det.x - det.width / 2);
-                    const by = zone.y + (det.y - det.height / 2);
-                    ctx.strokeRect(bx, by, det.width, det.height);
+                    // det.x, det.y ya son esquina sup-izq (convertidos en handleProcess)
+                    ctx.strokeRect(zone.x + det.x, zone.y + det.y, det.width, det.height);
                 });
             }
         });
@@ -126,13 +124,23 @@ const DoorDetectorDemo = ({ onClose }) => {
 
         try {
             const base64 = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
-            const predictions = await analyzeZone(base64);
+            const preds = await analyzeZone(base64);
+
+            // Convertir centro → esquina al guardar (Roboflow devuelve x,y como centro)
+            const valid = preds
+                .filter(p => p.confidence >= confidence / 100)
+                .map(p => ({
+                    x: p.x - p.width / 2,
+                    y: p.y - p.height / 2,
+                    width: p.width,
+                    height: p.height
+                }));
 
             setZones(prev => prev.map(z => z.id === zone.id ? {
                 ...z,
                 processing: false,
-                count: predictions.length,
-                detections: predictions.filter(d => d.confidence > confidence / 100)
+                count: valid.length,
+                detections: valid
             } : z));
         } catch (err) {
             console.error("AI Analysis Error:", err);
