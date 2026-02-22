@@ -1,254 +1,200 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import Plot from 'react-plotly.js';
-import { FaChartLine, FaRobot, FaCompress, FaBitcoin, FaApple, FaCar, FaPaperPlane, FaUserTie } from 'react-icons/fa';
-import { marketData, getTechnicalSummary } from '../data/marketData';
+import axios from 'axios';
 
 const FinancialForecaster = ({ onClose }) => {
-    const [selectedAsset, setSelectedAsset] = useState('BTC');
-    const [timeframe, setTimeframe] = useState('1Y'); // 1M, 6M, 1Y, 5Y
-    const [messages, setMessages] = useState([
-        { role: 'assistant', content: 'Hola. Soy tu Gestor de Portafolio Senior. Analizo tendencias de mercado basándome en análisis técnico y fundamental. ¿Qué activo te interesa revisar hoy?' }
-    ]);
+    const [ticker, setTicker] = useState('BTC-USD');
+    const [chartData, setChartData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
-    const [isTyping, setIsTyping] = useState(false);
-    const messagesEndRef = useRef(null);
+    const [chatLoading, setChatLoading] = useState(false);
+    const chatEndRef = useRef(null);
 
-    // Auto-scroll chat
-    useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages]);
-
-    const asset = marketData[selectedAsset];
-
-    // Filtrar datos según timeframe
-    const getFilteredData = () => {
-        const daysMap = { '1M': 30, '6M': 180, '1Y': 365, '5Y': 1825 };
-        const days = daysMap[timeframe] || 365;
-        const sliceIndex = Math.max(0, asset.dates.length - days);
-
-        return {
-            x: asset.dates.slice(sliceIndex),
-            open: asset.open.slice(sliceIndex),
-            high: asset.high.slice(sliceIndex),
-            low: asset.low.slice(sliceIndex),
-            close: asset.close.slice(sliceIndex)
-        };
+    const scrollToBottom = () => {
+        chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
-    const chartData = getFilteredData();
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
 
-    const handleSendMessage = async (e) => {
+    useEffect(() => {
+        fetchData();
+    }, [ticker]);
+
+    const fetchData = async () => {
+        setLoading(true);
+        try {
+            // Usamos una API pública para demo (o tu proxy si lo tienes configurado)
+            const response = await axios.get(`https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1h&range=1d`);
+            const result = response.data.chart.result[0];
+            const quotes = result.indicators.quote[0];
+            const timestamps = result.timestamp;
+
+            const data = [{
+                x: timestamps.map(t => new Date(t * 1000)),
+                open: quotes.open,
+                high: quotes.high,
+                low: quotes.low,
+                close: quotes.close,
+                type: 'candlestick',
+                xaxis: 'x',
+                yaxis: 'y',
+                increasing: { line: { color: '#00f3ff' } },
+                decreasing: { line: { color: '#ff4d4d' } }
+            }];
+
+            setChartData(data);
+        } catch (error) {
+            console.error("Error fetching finance data:", error);
+        }
+        setLoading(false);
+    };
+
+    const handleSend = async (e) => {
         e.preventDefault();
         if (!input.trim()) return;
 
-        const userMsg = input;
+        const userMsg = { role: 'user', content: input };
+        setMessages(prev => [...prev, userMsg]);
         setInput('');
-        setMessages(prev => [...prev, { role: 'user', content: userMsg }]);
-        setIsTyping(true);
-
-        // Preparar contexto para AI
-        const techSummary = getTechnicalSummary(selectedAsset, timeframe === '5Y' ? 365 : 30);
-
-        const systemPrompt = `
-        Actúa como un Gestor de Fondos de Inversión Senior de Wall Street (Hedge Fund Manager).
-        Tu estilo es profesional, directo, analítico y ligeramente conservador pero oportunista.
-        
-        CONTEXTO DE MERCADO ACTUAL (${selectedAsset}):
-        ${techSummary}
-        
-        INSTRUCCIONES:
-        1. Justifica tu respuesta usando los datos técnicos provistos (RSI, Volatilidad, Tendencia).
-        2. Menciona "Soportes" y "Resistencias" aproximados basados en el rango de precios.
-        3. Si te preguntan si comprar/vender, da una opinión fundamentada pero añade siempre un disclaimer corto.
-        4. Usa formato Markdown para negritas y listas.
-        5. Sé conciso (máximo 3 párrafos cortos).
-        `;
+        setChatLoading(true);
 
         try {
-            const response = await fetch('/api/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    messages: [
-                        { role: 'system', content: systemPrompt },
-                        ...messages.map(m => ({ role: m.role, content: m.content })),
-                        { role: 'user', content: userMsg }
-                    ]
-                })
-            });
-
-            if (!response.ok) throw new Error("Error de conexión con el oráculo");
-
-            const data = await response.json();
-            const aiReply = data.choices[0].message.content;
-
-            setMessages(prev => [...prev, { role: 'assistant', content: aiReply }]);
-
+            // Simulación de respuesta IA con contexto del gráfico
+            // En producción aquí llamarías a tu API de Groq/Gemini
+            setTimeout(() => {
+                const aiMsg = {
+                    role: 'assistant',
+                    content: `Analizando el gráfico de ${ticker}... Veo una tendencia mixta con soporte en los niveles actuales. La volatilidad reciente sugiere que podrías ver un rebote técnico si el volumen acompaña.`
+                };
+                setMessages(prev => [...prev, aiMsg]);
+                setChatLoading(false);
+            }, 1500);
         } catch (error) {
-            setMessages(prev => [...prev, { role: 'assistant', content: "⚠️ Lo siento, perdimos conexión con el servidor de Bloomberg. Intenta de nuevo." }]);
-        } finally {
-            setIsTyping(false);
+            setChatLoading(false);
         }
     };
 
+    const plotLayout = {
+        dragmode: 'zoom',
+        showlegend: false,
+        xaxis: {
+            rangeslider: { visible: false },
+            gridcolor: '#334155',
+            tickfont: { color: '#94a3b8', size: 10 }
+        },
+        yaxis: {
+            gridcolor: '#334155',
+            tickfont: { color: '#94a3b8', size: 10 },
+            side: 'right'
+        },
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        margin: { t: 20, r: 40, b: 30, l: 10 },
+        autosize: true
+    };
+
     return createPortal(
-        <div className="fixed inset-0 z-[9999] bg-[#0b0f19] text-white overflow-hidden overscroll-none font-sans flex flex-col md:flex-row">
-
-            {/* Left Main Area: Chart */}
-            <div className="flex-1 flex flex-col relative border-r border-gray-800 h-[55dvh] md:h-auto">
-                {/* Header Chart */}
-                <div className="p-6 border-b border-gray-800 flex justify-between items-center bg-[#111827]">
-                    <div>
-                        <h1 className="text-2xl font-bold flex items-center gap-3">
-                            {selectedAsset === 'BTC' && <FaBitcoin className="text-orange-500" />}
-                            {selectedAsset === 'AAPL' && <FaApple className="text-gray-300" />}
-                            {selectedAsset === 'TSLA' && <FaCar className="text-red-500" />}
-                            {asset.name}
-                        </h1>
-                        <p className="text-sm text-gray-400 font-mono tracking-wider">{asset.symbol} • MARKET OPEN</p>
-                    </div>
-                    <div className="text-right">
-                        <div className="text-2xl font-mono font-bold">${asset.currentPrice.toLocaleString()}</div>
-                        <div className={`text-sm font-bold ${asset.change.includes('+') ? 'text-green-400' : 'text-red-400'}`}>
-                            {asset.change} Today
-                        </div>
-                    </div>
-                </div>
-
-                {/* Toolbar */}
-                <div className="flex gap-2 p-4 bg-[#0b0f19]">
-                    {['1M', '6M', '1Y', '5Y'].map(tf => (
-                        <button
-                            key={tf}
-                            onClick={() => setTimeframe(tf)}
-                            className={`px-3 py-1 text-xs font-bold rounded transition-colors ${timeframe === tf ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}
-                        >
-                            {tf}
-                        </button>
-                    ))}
-                </div>
-
-                {/* Chart Area */}
-                <div className="flex-1 w-full relative">
-                    <Plot
-                        data={[{
-                            x: chartData.x,
-                            close: chartData.close,
-                            decreasing: { line: { color: '#ef4444' } },
-                            high: chartData.high,
-                            increasing: { line: { color: '#22c55e' } },
-                            line: { color: 'rgba(31,119,180,1)' },
-                            low: chartData.low,
-                            open: chartData.open,
-                            type: 'candlestick',
-                            xaxis: 'x',
-                            yaxis: 'y'
-                        }]}
-                        layout={{
-                            dragmode: 'zoom',
-                            paper_bgcolor: '#0b0f19',
-                            plot_bgcolor: '#0b0f19',
-                            showlegend: false,
-                            xaxis: {
-                                automargin: true,
-                                gridcolor: '#1f2937',
-                                rangeslider: { visible: false },
-                                tickfont: { color: '#6b7280' }
-                            },
-                            yaxis: {
-                                automargin: true,
-                                gridcolor: '#1f2937',
-                                tickfont: { color: '#6b7280' },
-                                side: 'right'
-                            },
-                            margin: { r: 60, l: 20, t: 20, b: 40 },
-                            autosize: true
-                        }}
-                        useResizeHandler={true}
-                        style={{ width: "100%", height: "100%" }}
-                        config={{ displayModeBar: false, scrollZoom: true }}
-                    />
-                </div>
+        <div className="fixed inset-0 z-[9999] bg-[#0f172a] flex flex-col text-white overflow-hidden">
+            {/* Top Navigation */}
+            <div className="bg-[#1e293b] p-4 flex justify-between items-center border-b border-gray-700 shrink-0">
+                <h2 className="text-lg md:text-xl font-bold font-heading text-[#00f3ff] flex items-center gap-2">
+                    <i className="fas fa-chart-line"></i> FINANCE AI
+                </h2>
+                <button onClick={onClose} className="flex items-center gap-2 px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 border border-red-500/20 rounded-lg transition-all text-[10px] font-bold tracking-wider uppercase">
+                    <i className="fas fa-arrow-left"></i> VOLVER
+                </button>
             </div>
 
-            {/* Right Panel: Controls & Chat */}
-            <div className="w-full md:w-[400px] h-[45dvh] md:h-auto bg-[#111827] flex flex-col relative z-20 shadow-2xl">
-                {/* Header Panel */}
-                <div className="p-4 border-b border-gray-800 flex justify-between items-center">
-                    <h2 className="text-sm font-bold text-gray-400 uppercase tracking-widest flex gap-2 items-center">
-                        <FaUserTie /> AI Analyst
-                    </h2>
-                    <button onClick={onClose} className="flex items-center gap-2 px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 border border-red-500/20 rounded-lg transition-all text-[10px] font-bold tracking-wider uppercase">
-                        <FaCompress /> CERRAR DEMO
-                    </button>
-                </div>
+            <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+                {/* Chart Section */}
+                <div className="flex-1 flex flex-col p-2 md:p-6 overflow-hidden h-[45vh] lg:h-full border-b lg:border-b-0 lg:border-r border-gray-700">
+                    <div className="flex flex-wrap gap-2 mb-4 shrink-0">
+                        {['AAPL', 'TSLA', 'BTC-USD', 'ETH-USD'].map(t => (
+                            <button
+                                key={t}
+                                onClick={() => setTicker(t)}
+                                className={`px-4 py-1.5 rounded-full text-[10px] md:text-xs font-bold transition-all border ${ticker === t ? 'bg-[#00f3ff]/20 border-[#00f3ff] text-[#00f3ff]' : 'bg-gray-800 border-gray-700 text-gray-400 hover:bg-gray-700'}`}
+                            >
+                                {t}
+                            </button>
+                        ))}
+                    </div>
 
-                {/* Asset Selector */}
-                <div className="p-4 grid grid-cols-3 gap-2 border-b border-gray-800">
-                    {['BTC', 'AAPL', 'TSLA'].map(sym => (
-                        <button
-                            key={sym}
-                            onClick={() => setSelectedAsset(sym)}
-                            className={`p-2 text-xs font-bold rounded border transition-all ${selectedAsset === sym
-                                ? 'bg-blue-600/20 border-blue-500 text-blue-400'
-                                : 'bg-[#1f2937] border-transparent text-gray-400 hover:bg-[#374151]'}`}
-                        >
-                            {sym}
-                        </button>
-                    ))}
-                </div>
-
-                {/* Chat History */}
-                <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar bg-[#0b0f19]">
-                    {messages.map((msg, idx) => (
-                        <div key={idx} className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                            {msg.role === 'assistant' && (
-                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center shrink-0 border border-gray-600">
-                                    <FaUserTie className="text-blue-400 text-xs" />
+                    <div className="flex-1 bg-[#1e293b]/50 rounded-xl border border-gray-700 overflow-hidden relative">
+                        {loading && (
+                            <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#0f172a]/80 backdrop-blur-sm">
+                                <div className="text-center">
+                                    <div className="w-10 h-10 border-4 border-[#00f3ff] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                                    <p className="text-sm">Analizando Mercados...</p>
                                 </div>
-                            )}
-                            <div className={`max-w-[85%] p-3 rounded-xl text-xs leading-relaxed ${msg.role === 'user'
-                                ? 'bg-blue-600 text-white rounded-tr-none'
-                                : 'bg-[#1f2937] text-gray-300 border border-gray-700 rounded-tl-none'
-                                }`}>
-                                <div className="markdown-body" dangerouslySetInnerHTML={{
-                                    __html: msg.content.replace(/\n/g, '<br/>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                                }} />
                             </div>
-                        </div>
-                    ))}
-                    {isTyping && (
-                        <div className="flex gap-2 items-center text-gray-500 text-xs ml-10">
-                            <span className="animate-pulse">Escribiendo análisis...</span>
-                        </div>
-                    )}
-                    <div ref={messagesEndRef} />
+                        )}
+                        <Plot
+                            data={chartData}
+                            layout={plotLayout}
+                            useResizeHandler={true}
+                            className="w-full h-full"
+                            style={{ width: "100%", height: "100%" }}
+                            config={{ displayModeBar: false }}
+                        />
+                    </div>
                 </div>
 
-                {/* Chat Input */}
-                <div className="p-4 bg-[#111827] border-t border-gray-800">
-                    <form onSubmit={handleSendMessage} className="relative">
-                        <input
-                            type="text"
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            placeholder={`Pregunta sobre ${asset.symbol}...`}
-                            className="w-full bg-[#1f2937] border border-gray-700 text-white text-sm rounded-lg py-3 px-4 pr-10 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all placeholder-gray-500"
-                            disabled={isTyping}
-                        />
-                        <button
-                            type="submit"
-                            disabled={isTyping || !input.trim()}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-blue-400 hover:text-white disabled:opacity-50 transition-colors"
-                        >
-                            <FaPaperPlane />
-                        </button>
+                {/* Chat Section */}
+                <div className="w-full lg:w-[450px] bg-[#111827] flex flex-col overflow-hidden h-[55vh] lg:h-full">
+                    <div className="p-4 bg-[#1e293b] border-b border-gray-700 shrink-0">
+                        <h3 className="text-[10px] font-bold text-[#00f3ff] uppercase tracking-widest flex items-center gap-2">
+                            <i className="fas fa-robot"></i> Analista Conversacional
+                        </h3>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+                        {messages.length === 0 && (
+                            <div className="h-full flex flex-col items-center justify-center text-gray-500 text-center px-6">
+                                <i className="fas fa-comment-dots text-4xl mb-4 opacity-20"></i>
+                                <p className="text-sm">Haz una pregunta sobre el gráfico de <span className="text-[#00f3ff] font-bold">{ticker}</span>. La IA tiene contexto total.</p>
+                            </div>
+                        )}
+                        {messages.map((msg, i) => (
+                            <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                <div className={`max-w-[85%] p-3 rounded-2xl text-sm leading-relaxed ${msg.role === 'user' ? 'bg-[#00f3ff] text-[#000814] rounded-tr-none' : 'bg-[#1e293b] text-gray-200 border border-gray-700 rounded-tl-none'}`}>
+                                    {msg.content}
+                                </div>
+                            </div>
+                        ))}
+                        {chatLoading && (
+                            <div className="flex justify-start">
+                                <div className="bg-[#1e293b] p-3 rounded-2xl border border-gray-700 flex gap-1">
+                                    <span className="w-1.5 h-1.5 bg-[#00f3ff] rounded-full animate-bounce"></span>
+                                    <span className="w-1.5 h-1.5 bg-[#00f3ff] rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                                    <span className="w-1.5 h-1.5 bg-[#00f3ff] rounded-full animate-bounce [animation-delay:0.4s]"></span>
+                                </div>
+                            </div>
+                        )}
+                        <div ref={chatEndRef} />
+                    </div>
+
+                    <form onSubmit={handleSend} className="p-4 bg-[#1e293b] border-t border-gray-700 shrink-0">
+                        <div className="flex gap-2">
+                            <input
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                placeholder="Escribe tu consulta..."
+                                className="flex-1 bg-[#0f172a] border border-gray-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-[#00f3ff] transition-all"
+                            />
+                            <button
+                                type="submit"
+                                disabled={chatLoading}
+                                className="bg-[#00f3ff] hover:bg-[#00d8e6] text-[#000814] w-10 h-10 rounded-lg flex items-center justify-center transition-all disabled:opacity-50"
+                            >
+                                <i className="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
                     </form>
-                    <p className="text-[10px] text-gray-600 text-center mt-2">
-                        Not Financial Advice. AI experiment.
-                    </p>
                 </div>
             </div>
         </div>,

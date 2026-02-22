@@ -1,7 +1,11 @@
 import React, { useRef } from 'react';
 
-const ProjectCard = ({ title, techStack, description, image, demoLink, onOpenModal, modalId, dataLink, manualText = "Ver Flujo", onRunDemo }) => {
+const ProjectCard = ({ title, tech, desc, image, demoLink, link, github, onRunDemo, onViewCase }) => {
     const cardRef = useRef(null);
+
+    // Los nombres de las props han sido simplificados para mayor claridad
+    const techStack = tech || [];
+    const description = desc || "";
 
     const handleMouseMove = (e) => {
         const card = cardRef.current;
@@ -47,39 +51,33 @@ const ProjectCard = ({ title, techStack, description, image, demoLink, onOpenMod
             </div>
 
             <div className="p-6 flex flex-col flex-1">
-                <h3 className="text-xl mb-2.5 text-white group-hover:text-accent-primary transition-colors">{title}</h3>
-                <p className="mb-4">
-                    {techStack.map((tech, index) => (
-                        <span key={index} className="text-xs text-accent-primary bg-[rgba(0,243,255,0.1)] px-2.5 py-1 rounded-full mr-1.5 mb-1.5 inline-block border border-[rgba(0,243,255,0.05)]">
-                            {tech}
+                <h3 className="text-xl font-bold mb-2.5 text-white group-hover:text-accent-primary transition-colors">{title}</h3>
+                <div className="mb-4 flex flex-wrap gap-1.5">
+                    {techStack.map((t, index) => (
+                        <span key={index} className="text-[10px] md:text-xs text-accent-primary bg-accent-primary/10 px-2.5 py-1 rounded-full border border-accent-primary/20">
+                            {t}
                         </span>
                     ))}
-                </p>
-                <p className="text-text-secondary text-[0.95rem] mb-5 flex-1">{description}</p>
+                </div>
+                <p className="text-text-secondary text-sm mb-5 flex-1 line-clamp-3">{description}</p>
 
                 <div className="flex flex-wrap gap-2.5 mt-auto">
-                    {demoLink ? (
-                        <a href={demoLink} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-primary text-black bg-gradient-to-r from-accent-primary to-accent-secondary hover:shadow-[0_0_25px_rgba(0,243,255,0.6)] py-2 px-4 rounded font-heading font-bold text-sm uppercase tracking-wider transition-all flex items-center gap-2">
-                            Ver App <i className="fas fa-external-link-alt"></i>
-                        </a>
-                    ) : onRunDemo ? (
-                        <button onClick={onRunDemo} className="btn btn-sm btn-primary text-black bg-gradient-to-r from-accent-primary to-accent-secondary hover:shadow-[0_0_25px_rgba(0,243,255,0.6)] py-2 px-4 rounded font-heading font-bold text-sm uppercase tracking-wider transition-all flex items-center gap-2">
-                            Probar Demo <i className="fas fa-play"></i>
+                    {onRunDemo ? (
+                        <button onClick={onRunDemo} className="flex-1 min-w-[120px] bg-gradient-to-r from-accent-primary to-accent-secondary text-bg-dark py-2 px-4 rounded font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(0,243,255,0.4)]">
+                            Probar Demo <i className="fas fa-play text-[10px]"></i>
                         </button>
-                    ) : null}
-
-                    <button
-                        className="btn btn-sm btn-outline bg-transparent border border-accent-secondary text-accent-secondary hover:bg-accent-secondary hover:text-white hover:shadow-[0_0_15px_rgba(188,19,254,0.4)] py-2 px-4 rounded font-heading font-bold text-sm uppercase tracking-wider transition-all flex items-center gap-2"
-                        onClick={() => onOpenModal(modalId)}
-                    >
-                        {manualText} <i className="fas fa-network-wired"></i>
-                    </button>
-
-                    {dataLink && (
-                        <a href={dataLink} target="_blank" rel="noopener noreferrer" className="bg-transparent text-text-secondary py-[5px] px-[10px] border border-transparent hover:text-accent-primary hover:underline transition-colors flex items-center gap-2 text-sm">
-                            Datos <i className="fas fa-table"></i>
+                    ) : (demoLink || link) && (
+                        <a href={demoLink || link} target="_blank" rel="noopener noreferrer" className="flex-1 min-w-[120px] bg-gradient-to-r from-accent-primary to-accent-secondary text-bg-dark py-2 px-4 rounded font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(0,243,255,0.4)]">
+                            Ver App <i className="fas fa-external-link-alt text-[10px]"></i>
                         </a>
                     )}
+
+                    <button
+                        className="flex-1 min-w-[120px] bg-transparent border border-accent-primary/30 text-accent-primary hover:bg-accent-primary/10 py-2 px-4 rounded font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2"
+                        onClick={onViewCase}
+                    >
+                        Arquitectura <i className="fas fa-network-wired text-[10px]"></i>
+                    </button>
                 </div>
             </div>
         </article>

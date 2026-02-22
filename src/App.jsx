@@ -1,27 +1,22 @@
 import React from 'react'
+import { Routes, Route } from 'react-router-dom'
 import { ModalProvider } from './context/ModalContext'
 import ParticlesBackground from './components/ParticlesBackground'
-import Header from './components/Header'
-import Hero from './components/Hero'
-import About from './components/About'
-import Projects from './components/Projects'
-import Skills from './components/Skills'
-import Contact from './components/ContactSection'
-import Footer from './components/FooterSection'
+import Home from './pages/Home'
+import DoorDetectorDemo from './components/DoorDetectorDemo'
+import FinancialForecaster from './components/FinancialForecaster'
+import EnterpriseRAG from './components/EnterpriseRAG'
 
 function App() {
     return (
         <ModalProvider>
             <ParticlesBackground />
-            <Header />
-            <main>
-                <Hero />
-                <About />
-                <Projects />
-                <Skills />
-                <Contact />
-            </main>
-            <Footer />
+            <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/demo/detector" element={<DoorDetectorDemo onClose={() => window.history.back()} />} />
+                <Route path="/demo/finance" element={<FinancialForecaster onClose={() => window.history.back()} />} />
+                <Route path="/demo/rag" element={<EnterpriseRAG onClose={() => window.history.back()} />} />
+            </Routes>
         </ModalProvider>
     )
 }

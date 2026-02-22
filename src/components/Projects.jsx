@@ -1,119 +1,112 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import ProjectCard from './ProjectCard';
 import Modal from './Modal';
 import { useModal } from '../context/ModalContext';
-import DoorDetectorDemo from './DoorDetectorDemo';
-import EnterpriseRAG from './EnterpriseRAG';
-import FinancialForecaster from './FinancialForecaster';
 import Step from './Step';
 import Arrow from './Arrow';
 
 const Projects = () => {
     const { openModal } = useModal();
-    const [showDemo, setShowDemo] = useState(false);
-    const [showRAGDemo, setShowRAGDemo] = useState(false);
-    const [showFinanceDemo, setShowFinanceDemo] = useState(false);
+    const navigate = useNavigate();
 
     const projects = [
         {
             title: "Reconocimiento Arquitectónico",
-            techStack: ["Python", "Roboflow", "Computer Vision"],
-            description: "Sistema inteligente para conteo automatizado de objetos en planos arquitectónicos.",
-            image: "assets/images/architectural_recognition_v2.png",
-            demoLink: null,
-            modalId: "modal-roboflow",
-            manualText: "Ver Flujo",
-            dataLink: null,
-            onRunDemo: () => setShowDemo(true)
+            desc: "Sistema de IA para la detección automatizada de puertas en planos PDF complejos.",
+            tech: ["Computer Vision", "React", "Roboflow API"],
+            image: "https://images.unsplash.com/photo-1503387762-592dea58ef23?q=80&w=800&auto=format&fit=crop",
+            link: "#",
+            github: "#",
+            onRunDemo: () => navigate('/demo/detector'),
+            onViewCase: () => openModal('modal-detector')
         },
         {
-            title: "Enterprise RAG (Live Data)",
-            techStack: ["Gemini API", "Google Sheets", "LlamaIndex"],
-            description: "IA conectada a datos corporativos en tiempo real. Automatiza el análisis de inventario y costos para optimizar la toma de decisiones y reducir fricciones operativas.",
-            image: "assets/images/enterprise_rag_v2.png",
-            demoLink: null,
-            modalId: "modal-rag",
-            manualText: "Manual",
-            dataLink: "https://docs.google.com/spreadsheets/d/1nctKaZw4TjGsPqwgX05mOZEniBA3zQGQfBqeDe1E0Kg/edit?usp=sharing",
-            onRunDemo: () => setShowRAGDemo(true)
+            title: "Enterprise RAG Solution",
+            desc: "Asistente inteligente que procesa documentación técnica privada con privacidad garantizada.",
+            tech: ["LangChain", "Vector DB", "Groq Cloud"],
+            image: "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?q=80&w=800&auto=format&fit=crop",
+            link: "#",
+            github: "#",
+            onRunDemo: () => navigate('/demo/rag'),
+            onViewCase: () => openModal('modal-rag')
         },
         {
             title: "AI Financial Forecaster",
-            techStack: ["Llama 3.3", "Yahoo Finance", "Plotly"],
-            description: "Plataforma de visualización financiera con predicciones de IA. Diseñada para transformar datos crudos del mercado en insights estratégicos accionables.",
-            image: "assets/images/financial_forecaster_v2.png",
-            demoLink: null,
-            modalId: "modal-finance",
-            manualText: "Arquitectura",
-            dataLink: null,
-            onRunDemo: () => setShowFinanceDemo(true)
+            desc: "Monitor de mercados en tiempo real con chat AI contextual para análisis predictivo.",
+            tech: ["Plotly.js", "Financial APIs", "Llama 3"],
+            image: "https://images.unsplash.com/photo-1611974717483-9b910c0c9af9?q=80&w=800&auto=format&fit=crop",
+            link: "#",
+            github: "#",
+            onRunDemo: () => navigate('/demo/finance'),
+            onViewCase: () => openModal('modal-finance')
         }
     ];
 
     return (
-        <section id="projects" className="py-24 px-[10%] relative z-10">
-            <h2 className="text-4xl text-center mb-16 relative inline-block left-1/2 -translate-x-1/2 font-heading">
-                Proyectos Destacados
-                <span className="absolute -bottom-4 left-1/4 w-1/2 h-[3px] bg-gradient-to-r from-transparent via-accent-secondary to-transparent"></span>
-            </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                {projects.map((project, index) => (
-                    <ProjectCard
-                        key={index}
-                        {...project}
-                        onOpenModal={openModal}
-                    />
-                ))}
+        <section id="projects" className="py-20 px-5">
+            <div className="max-w-6xl mx-auto">
+                <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center font-heading">
+                    Proyectos <span className="text-accent-primary">Destacados</span>
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {projects.map((project, index) => (
+                        <ProjectCard key={index} {...project} />
+                    ))}
+                </div>
             </div>
 
-            {/* Modals Content */}
-            <Modal id="modal-roboflow" title="Flujo de Reconocimiento Arquitectónico">
-                <div className="flex flex-wrap justify-between gap-5 mt-8 items-center">
-                    <Step icon="fa-file-upload" title="1. Input" desc="El usuario sube un plano arquitectónico (PDF/Imagen)." />
-                    <Arrow />
-                    <Step icon="fa-brain" title="2. Procesamiento AI" desc="El modelo Roboflow analiza la estructura visual." />
-                    <Arrow />
-                    <Step icon="fa-search-location" title="3. Detección" desc="Identificación y conteo de puertas y elementos clave." />
-                    <Arrow />
-                    <Step icon="fa-chart-bar" title="4. Output" desc="Visualización de resultados y reporte descargable." />
+            {/* Modal de Caso: Detector de Puertas */}
+            <Modal id="modal-detector" title="Caso: Detector de Puertas IA">
+                <div className="space-y-6">
+                    <p className="text-text-secondary leading-relaxed">
+                        Este proyecto nació de la necesidad de automatizar el conteo de elementos en planos arquitectónicos de gran escala.
+                    </p>
+                    <div className="flex flex-col md:flex-row items-center gap-4 bg-bg-dark/50 p-6 rounded-xl border border-white/5">
+                        <Step icon="fa-file-pdf" title="Carga PDF" desc="Se renderiza el plano en alta resolución." />
+                        <Arrow />
+                        <Step icon="fa-mouse-pointer" title="Selección" desc="El usuario define zonas de interés." />
+                        <Arrow />
+                        <Step icon="fa-microchip" title="Detección" desc="IA identifica y cuenta los elementos." />
+                    </div>
                 </div>
             </Modal>
 
-            <Modal id="modal-rag" title="Guía de Prueba: RAG Multifuente">
-                <div className="flex flex-wrap justify-between gap-5 mt-8 items-center">
-                    <Step icon="fa-edit" title="1. Modifica" desc="Abre la Google Sheet y cambia un valor (ej. el Stock de una GPU)." />
-                    <Arrow />
-                    <Step icon="fa-sync" title="2. Sincroniza" desc="El sistema jala el CSV actualizado al instante mediante la API." />
-                    <Arrow />
-                    <Step icon="fa-comments" title="3. Pregunta" desc="Haz consultas complejas en el chat sobre costos o stock." />
-                    <Arrow />
-                    <Step icon="fa-shield-alt" title="4. Verifica" desc="La IA citará la celda o el documento exacto de donde sacó la info." />
+            {/* Modal de Caso: Enterprise RAG */}
+            <Modal id="modal-rag" title="Caso: Enterprise RAG">
+                <div className="space-y-6">
+                    <p className="text-text-secondary leading-relaxed">
+                        Sistema diseñado para bancos y aseguradoras que necesitan consultar sus manuales internos sin exponer datos a la nube pública.
+                    </p>
+                    <ul className="space-y-3 text-sm">
+                        <li className="flex items-center gap-3 text-accent-primary">
+                            <i className="fas fa-check-circle"></i> Aislamiento total de datos sensibles.
+                        </li>
+                        <li className="flex items-center gap-3 text-accent-primary">
+                            <i className="fas fa-check-circle"></i> Respuestas con citación de fuentes originales.
+                        </li>
+                    </ul>
                 </div>
             </Modal>
 
-            <Modal id="modal-finance" title="Flujo de Predicción Financiera">
-                <div className="flex flex-wrap justify-between gap-5 mt-8 items-center">
-                    <Step icon="fa-satellite-dish" title="1. Ingesta" desc={<span>Extracción de datos OHLC en tiempo real vía <strong>Yahoo Finance API</strong>.</span>} />
-                    <Arrow />
-                    <Step icon="fa-chart-line" title="2. Visualización" desc={<span>Renderizado de velas japonesas interactivas con <strong>Plotly</strong>.</span>} />
-                    <Arrow />
-                    <Step icon="fa-brain" title="3. Inferencia" desc={<span><strong>Llama 3.3</strong> analiza la volatilidad y predice la tendencia.</span>} />
+            {/* Modal de Caso: Financial Forecaster */}
+            <Modal id="modal-finance" title="Caso: Financial Forecaster">
+                <div className="space-y-6">
+                    <p className="text-text-secondary leading-relaxed">
+                        Un dashboard interactivo que combina visualización de datos en tiempo real con inteligencia conversacional.
+                    </p>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="p-4 bg-bg-dark/50 rounded-lg border border-white/5 text-center">
+                            <i className="fas fa-chart-line text-2xl text-accent-primary mb-2"></i>
+                            <h4 className="text-xs font-bold uppercase">Predicción</h4>
+                        </div>
+                        <div className="p-4 bg-bg-dark/50 rounded-lg border border-white/5 text-center">
+                            <i className="fas fa-robot text-2xl text-accent-primary mb-2"></i>
+                            <h4 className="text-xs font-bold uppercase">Chat Contextual</h4>
+                        </div>
+                    </div>
                 </div>
             </Modal>
-
-            {/* Demo Fullscreen Component */}
-            {showDemo && (
-                <DoorDetectorDemo onClose={() => setShowDemo(false)} />
-            )}
-
-            {showRAGDemo && (
-                <EnterpriseRAG onClose={() => setShowRAGDemo(false)} />
-            )}
-
-            {showFinanceDemo && (
-                <FinancialForecaster onClose={() => setShowFinanceDemo(false)} />
-            )}
         </section>
     );
 };
