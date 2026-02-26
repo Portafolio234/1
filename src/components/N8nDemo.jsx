@@ -185,14 +185,6 @@ const N8nDemo = ({ onClose }) => {
                             </div>
 
                             <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-5 custom-scrollbar bg-bg-dark/30">
-                                {messages.length === 0 ? (
-                                    <div className="h-full flex flex-col items-center justify-center text-white/50 text-center px-6">
-                                        <i className="fa-solid fa-paper-plane text-5xl mb-6 opacity-20 text-accent-primary"></i>
-                                        <h4 className="text-white font-bold mb-2">Canal Establecido</h4>
-                                        <p className="text-sm">Envía un mensaje para iniciar la ejecución del webhook en n8n.</p>
-                                    </div>
-                                ) : null}
-
                                 {messages.map((msg, i) => (
                                     <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-fadeIn`}>
                                         <div className={`max-w-[90%] md:max-w-[75%] p-4 rounded-[var(--radius-lg)] text-[13px] md:text-sm leading-relaxed shadow-lg ${
@@ -209,6 +201,27 @@ const N8nDemo = ({ onClose }) => {
                                         </div>
                                     </div>
                                 ))}
+
+                                {messages.length === 1 && !loading ? (
+                                    <div className="w-full mx-auto mt-6 animate-fadeIn flex flex-col gap-3">
+                                        <p className="text-[10px] uppercase font-bold text-accent-primary tracking-widest pl-1 mb-1 text-center md:text-left">
+                                            <i className="fa-solid fa-lightbulb mr-1"></i> Ejemplos sugeridos (Clic para editar)
+                                        </p>
+                                        {[
+                                            "Hola, soy Leonardo. Estoy buscando un departamento de lujo en Lomas de Chapultepec, tengo un presupuesto de 18 millones de pesos. ¿Qué opciones tienen disponibles con entrega inmediata?",
+                                            "Busco una casa con jardín amplio al sur de la ciudad. Mi presupuesto es de 10 millones de pesos y la necesito cerca de escuelas u hospitales.",
+                                            "Hola, me interesan oficinas corporativas en Polanco o Reforma. Requerimos espacio para 50 personas, estacionamiento amplio y disponibilidad para este mes."
+                                        ].map((sug, idx) => (
+                                            <button 
+                                                key={idx}
+                                                onClick={() => setInput(sug)}
+                                                className="text-left bg-white/5 hover:bg-white/10 border border-white/10 hover:border-accent-primary/50 text-[11px] md:text-[12px] text-white/80 hover:text-white p-3 md:p-4 rounded-[var(--radius-lg)] transition-all leading-relaxed w-full md:w-[85%] lg:w-[75%]"
+                                            >
+                                                {sug}
+                                            </button>
+                                        ))}
+                                    </div>
+                                ) : null}
                                 
                                 {loading ? (
                                     <div className="flex justify-start animate-fadeIn">
