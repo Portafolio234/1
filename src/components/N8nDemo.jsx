@@ -9,6 +9,7 @@ const N8nDemo = ({ onClose }) => {
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
     const [showArchitecture, setShowArchitecture] = useState(false);
+    const [showSheet, setShowSheet] = useState(false);
     const chatEndRef = useRef(null);
 
     const scrollToBottom = useCallback(() => {
@@ -96,6 +97,12 @@ const N8nDemo = ({ onClose }) => {
                     </h2>
                     {isEmailSet ? (
                         <>
+                            <button
+                                onClick={() => setShowSheet(true)}
+                                className="hidden md:flex items-center gap-2 px-3 py-1 bg-bg-elevated hover:bg-green-500/10 text-white/80 hover:text-green-400 border border-white/10 rounded-[var(--radius-sm)] transition-all text-[10px] font-bold tracking-wider uppercase mr-1"
+                            >
+                                <i className="fa-solid fa-table"></i> Ver CRM
+                            </button>
                             <button
                                 onClick={() => setShowArchitecture(!showArchitecture)}
                                 className="hidden md:flex items-center gap-2 px-3 py-1 bg-bg-elevated hover:bg-accent-primary/10 text-white/80 hover:text-accent-primary border border-white/10 rounded-[var(--radius-sm)] transition-all text-[10px] font-bold tracking-wider uppercase"
@@ -257,6 +264,50 @@ const N8nDemo = ({ onClose }) => {
                     </div>
                 )}
             </div>
+
+            {/* Modal Glassmorphism para Google Sheets */}
+            {showSheet ? (
+                <div className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 md:p-8 animate-fadeIn">
+                    <div className="bg-bg-elevated border border-white/10 rounded-[var(--radius-xl)] w-full max-w-6xl h-full max-h-[90vh] flex flex-col overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.8)] relative">
+                        {/* Header del modal */}
+                        <div className="p-4 border-b border-white/5 flex justify-between items-center bg-bg-dark/80 shrink-0">
+                            <h3 className="text-white font-bold font-heading uppercase tracking-widest text-sm flex items-center gap-2">
+                                <i className="fa-solid fa-table text-green-400"></i> CRM Inmobiliario (Google Sheets)
+                            </h3>
+                            <div className="flex gap-3">
+                                <a 
+                                    href="https://docs.google.com/spreadsheets/d/1M2YEcip-njCm2QR2-412PRFt-QDNZUBABddApw88puE/edit?usp=sharing" 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="px-3 py-1 flex items-center gap-2 bg-green-500/10 hover:bg-green-500/20 border border-green-500/20 text-green-400 rounded transition-colors text-[10px] uppercase font-bold tracking-widest"
+                                >
+                                    <i className="fa-solid fa-external-link-alt"></i> Abrir Pestaña
+                                </a>
+                                <button 
+                                    onClick={() => setShowSheet(false)}
+                                    className="px-3 py-1 flex items-center gap-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 rounded transition-colors text-[10px] uppercase font-bold tracking-widest"
+                                >
+                                    <i className="fa-solid fa-times text-sm"></i> Cerrar
+                                </button>
+                            </div>
+                        </div>
+                        {/* Iframe content */}
+                        <div className="flex-1 w-full relative bg-white">
+                            {/* Un loader detrás del iframe por si carga lento */}
+                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-bg-dark">
+                                <span className="w-8 h-8 border-2 border-accent-primary border-t-transparent rounded-full animate-spin"></span>
+                                <p className="mt-4 text-xs tracking-widest text-text-muted uppercase font-bold">Conectando a Google Sheets...</p>
+                            </div>
+                            <iframe 
+                                src="https://docs.google.com/spreadsheets/d/1M2YEcip-njCm2QR2-412PRFt-QDNZUBABddApw88puE/preview?rm=minimal" 
+                                className="w-full h-full relative z-10 border-0"
+                                title="CRM Google Sheets"
+                                sandbox="allow-scripts allow-same-origin allow-popups"
+                            />
+                        </div>
+                    </div>
+                </div>
+            ) : null}
         </div>
     );
 };
