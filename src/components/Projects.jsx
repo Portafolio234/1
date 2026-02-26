@@ -40,6 +40,17 @@ const Projects = () => {
             github: "#",
             onRunDemo: () => navigate('/demo/finance'),
             onViewCase: () => openModal('modal-finance')
+        },
+        {
+            title: "n8n Automation Flow",
+            desc: "Agente conversacional IA integrado a flujos de automatización de n8n mediante Webhooks.",
+            tech: ["n8n", "Webhooks", "React"],
+            image: "assets/images/n8n_demo_v2.png", // Usa una imagen genérica por defecto si no existe
+            icon: "fa-bolt", // Icono alternativo visual para la tarjeta principal
+            link: "#",
+            github: "#",
+            onRunDemo: () => navigate('/demo/n8n'),
+            onViewCase: () => openModal('modal-n8n')
         }
     ];
 
@@ -50,9 +61,15 @@ const Projects = () => {
                     Proyectos <span className="text-accent-primary">Destacados</span>
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {projects.map((project, index) => (
-                        <ProjectCard key={index} {...project} />
-                    ))}
+                    {projects.map((project, index) => {
+                        // Si hay exactamente 4 proyectos y es el último, lo centramos en en la fila de 3 columnas (desktop)
+                        const centerLastCard = projects.length === 4 && index === 3;
+                        return (
+                            <div key={index} className={centerLastCard ? "lg:col-start-2" : ""}>
+                                <ProjectCard {...project} />
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
 
@@ -104,6 +121,22 @@ const Projects = () => {
                             <i className="fas fa-robot text-2xl text-accent-primary mb-2"></i>
                             <h4 className="text-xs font-bold uppercase">Chat Contextual</h4>
                         </div>
+                    </div>
+                </div>
+            </Modal>
+
+            {/* Modal de Caso: n8n Automation */}
+            <Modal id="modal-n8n" title="Caso: n8n Automation Flow">
+                <div className="space-y-6">
+                    <p className="text-text-secondary leading-relaxed">
+                        Este módulo consume una automatización configurada en un servidor propio de <span className="text-accent-primary font-bold">n8n</span>. La memoria de la conversación está atada al identificador de sesión (correo) del usuario.
+                    </p>
+                    <div className="flex flex-col md:flex-row items-center gap-4 bg-bg-dark/50 p-6 rounded-xl border border-white/5">
+                        <Step icon="fa-desktop" title="Interfaz" desc="React consume el Webhook mediante Fetch y la cookie (email)." />
+                        <Arrow />
+                        <Step icon="fa-bolt" title="n8n Flow" desc="Recepción del payload, enrutamiento y procesamiento por IA." />
+                        <Arrow />
+                        <Step icon="fa-comment" title="Output" desc="Retorno de JSON estandarizado a la Web." />
                     </div>
                 </div>
             </Modal>

@@ -92,6 +92,16 @@ Sistema Retrieval-Augmented Generation que opera íntegramente en el navegador.
 - **LLM**: Las respuestas se generan via Groq Cloud, citando fuentes del documento indexado.
 - **Modos**: Demo (documentos preconfigurados) y Upload (documentos del usuario).
 
+### n8n Automation Flow
+
+Agente conversacional IA integrado directamente a flujos de automatización Serverless mediante Webhooks.
+
+- **Integración**: Conexión nativa Vercel → n8n a través de Webhook HTTP POST (`/webhook/.../chat`).
+- **Arquitectura UI**: Diseño basado en principios *Glassmorphism* y *Vercel React Best Practices*. Layout condicionado mediante ternarios estrictos y renderizado "Mobile-First" nativo que colapsa la arquitectura técnica para priorizar la interfaz de chat en dispositivos móviles.
+- **Seguridad y CORS**: Inyección explícita de directivas `mode: 'cors'` y headers de aceptación JSON.
+- **Parseo Dinámico**: Fallback en cascada capaz de consumir y limpiar tanto respuestas de texto plano (`text/plain`) como esquemas JSON complejos (Google Sheets integration).
+- **Memoria de Sesión**: Inyección de "Session ID" por correo electrónico vinculada al nodo base de la inteligencia artificial del diagrama.
+
 ---
 
 ## Stack Tecnológico
